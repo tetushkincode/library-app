@@ -1,167 +1,105 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <title>Library Catalog</title>
+  <meta charset="UTF-8">
+  <title>Library Search</title>
   <style>
-    body {
-      font-family: Arial, sans-serif;
-      margin: 20px;
-    }
-    h1 {
-      text-align: center;
-    }
-    .controls {
-      margin-bottom: 20px;
-      display: flex;
-      gap: 10px;
-      justify-content: center;
-      flex-wrap: wrap;
-    }
-    input, select, label {
-      font-size: 16px;
-      padding: 5px;
-    }
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      margin-top: 10px;
-    }
-    th, td {
-      border: 1px solid #ccc;
-      padding: 8px;
-      text-align: left;
-    }
-    th {
-      background-color: #f2f2f2;
-    }
-    td a {
-      color: blue;
-      text-decoration: none;
-      font-weight: bold;
-    }
-    td a:hover {
-      text-decoration: underline;
-    }
+    body { font-family: Arial, sans-serif; margin: 20px; }
+    table { border-collapse: collapse; width: 100%; margin-top: 10px; }
+    th, td { border: 1px solid #ccc; padding: 8px; text-align: left; }
+    th { background: #f4f4f4; }
+    input, select { margin-right: 10px; padding: 5px; }
   </style>
 </head>
 <body>
-  <h1>📚 My Library</h1>
+  <h2>📚 My Library</h2>
 
-  <div class="controls">
-    <label>
-      Search:
-      <input type="text" id="searchBox" placeholder="Search by title, author, or genre...">
-    </label>
-
-    <label>
-      Genre:
-      <select id="genreFilter">
-        <option value="">All Genres</option>
-      </select>
-    </label>
-
-    <label>
-      <input type="checkbox" id="availableOnly"> Available only
-    </label>
-  </div>
+  <input type="text" id="searchInput" placeholder="Search by title, author, or genre">
+  <select id="genreFilter">
+    <option value="">All Genres</option>
+  </select>
+  <label><input type="checkbox" id="availableOnly"> Available only</label>
 
   <table id="booksTable">
     <thead>
       <tr>
-        <th>Title</th>
-        <th>Author</th>
-        <th>Genre</th>
-        <th>Status</th>
-        <th>Action</th>
+        <th>Title</th><th>Author</th><th>Status</th><th>Genre</th><th>Action</th>
       </tr>
     </thead>
     <tbody></tbody>
   </table>
 
-  <!-- Load Tabletop.js -->
-  <script src="https://unpkg.com/tabletop@1.6.0/src/tabletop.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
   <script>
-    const publicSpreadsheetUrl = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRQqir_B-_AnqRrFHeRkFHRETbe76WvGeF5nXcacHMNVAOtUHORA77jrULyNei6OFuJBylXXWzUL1JG/pub?output=csv';
-    let allData = [];
+    const publicSpreadsheetUrl = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRQqir_B-_AnqRrFHeRkFHRETbe76WvGeF5nXcacHMNVAOtUHORA77jrULyNei6OFuJBylXXWzUL1JG/pub?output=csv";
+    let books = [];
 
-    function init() {
-      Tabletop.init({
-        key: publicSpreadsheetUrl,
-        simpleSheet: true,
-        callback: function(data) {
-          allData = data;
-          populateGenres(data);
-          renderTable(data);
-        }
+    function renderTable(filtered) {
+      const tbody = document.querySelector("#booksTable tbody");
+      tbody.innerHTML = "";
+
+      const sorted = [...filtered].sort((a, b) => {
+        if (a["Current Status"].toLowerCase() === "available" && b["Current Status"].toLowerCase() !== "available") return -1;
+        if (a["Current Status"].toLowerCase() !== "available" && b["Current Status"].toLowerCase() === "available") return 1;
+        return a.Title.localeCompare(b.Title);
       });
 
-      document.getElementById("searchBox").addEventListener("input", applyFilters);
-      document.getElementById("genreFilter").addEventListener("change", applyFilters);
-      document.getElementById("availableOnly").addEventListener("change", applyFilters);
-    }
-
-    function populateGenres(data) {
-      const genreSet = new Set();
-      data.forEach(row => {
-        if (row.Genre) {
-          row.Genre.split(",").map(g => g.trim()).forEach(g => genreSet.add(g));
-        }
-      });
-      const genreFilter = document.getElementById("genreFilter");
-      genreSet.forEach(g => {
-        const opt = document.createElement("option");
-        opt.value = g;
-        opt.textContent = g;
-        genreFilter.appendChild(opt);
+      sorted.forEach(b => {
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+          <td>${b.Title}</td>
+          <td>${b.Author}</td>
+          <td>${b["Current Status"]}</td>
+          <td>${b.Genre}</td>
+          <td><a href="${b["Bot Link"]}" target="_blank">Borrow</a></td>
+        `;
+        tbody.appendChild(tr);
       });
     }
 
-    function applyFilters() {
-      const search = document.getElementById("searchBox").value.toLowerCase();
+    function filterBooks() {
+      const query = document.getElementById("searchInput").value.toLowerCase();
       const genre = document.getElementById("genreFilter").value;
       const availableOnly = document.getElementById("availableOnly").checked;
 
-      let filtered = allData.filter(row => {
-        let matchesSearch =
-          row.Title.toLowerCase().includes(search) ||
-          row.Author.toLowerCase().includes(search) ||
-          row.Genre.toLowerCase().includes(search);
+      const filtered = books.filter(b => {
+        const matchSearch =
+          b.Title.toLowerCase().includes(query) ||
+          b.Author.toLowerCase().includes(query) ||
+          b.Genre.toLowerCase().includes(query);
 
-        let matchesGenre = !genre || row.Genre.split(",").map(g => g.trim()).includes(genre);
-        let matchesAvailable = !availableOnly || row["Current Status"] === "Available";
+        const matchGenre = genre ? b.Genre.toLowerCase().includes(genre.toLowerCase()) : true;
+        const matchAvailable = availableOnly ? b["Current Status"].toLowerCase() === "available" : true;
 
-        return matchesSearch && matchesGenre && matchesAvailable;
+        return matchSearch && matchGenre && matchAvailable;
       });
 
       renderTable(filtered);
     }
 
-    function renderTable(data) {
-      const tbody = document.querySelector("#booksTable tbody");
-      tbody.innerHTML = "";
+    // Load CSV
+    Papa.parse(publicSpreadsheetUrl, {
+      download: true,
+      header: true,
+      complete: function(results) {
+        books = results.data.filter(row => row.Title); // remove empty rows
+        renderTable(books);
 
-      data.forEach(row => {
-        const tr = document.createElement("tr");
+        // fill dropdown with unique genres
+        const genres = [...new Set(books.flatMap(b => b.Genre.split(",").map(g => g.trim())))];
+        const genreFilter = document.getElementById("genreFilter");
+        genres.sort().forEach(g => {
+          const opt = document.createElement("option");
+          opt.value = g;
+          opt.textContent = g;
+          genreFilter.appendChild(opt);
+        });
+      }
+    });
 
-        tr.innerHTML += `<td>${row.Title}</td>`;
-        tr.innerHTML += `<td>${row.Author}</td>`;
-        tr.innerHTML += `<td>${row.Genre}</td>`;
-        tr.innerHTML += `<td>${row["Current Status"]}</td>`;
-
-        let actionHtml = "";
-        if (row["Current Status"] === "Available") {
-          actionHtml = `<a href="http://t.me/biblioteka_danang_bot?start=request_borrow_${row["Book ID"]}" target="_blank">Take book</a>`;
-        } else if (row["Current Status"] === "Borrowed") {
-          actionHtml = `<a href="http://t.me/biblioteka_danang_bot?start=wlist_${row["Book ID"]}" target="_blank">Take line</a>`;
-        }
-
-        tr.innerHTML += `<td>${actionHtml}</td>`;
-        tbody.appendChild(tr);
-      });
-    }
-
-    window.addEventListener("DOMContentLoaded", init);
+    document.getElementById("searchInput").addEventListener("input", filterBooks);
+    document.getElementById("genreFilter").addEventListener("change", filterBooks);
+    document.getElementById("availableOnly").addEventListener("change", filterBooks);
   </script>
 </body>
 </html>
