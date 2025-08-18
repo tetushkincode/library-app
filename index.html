@@ -35,27 +35,55 @@
     let books = [];
 
     function renderTable(data) {
-      const tbody = document.querySelector("#resultsTable tbody");
+      const tbody = document.querySelector("#booksTable tbody");
       tbody.innerHTML = "";
     
       data.forEach(book => {
         const row = document.createElement("tr");
     
-        row.innerHTML = `
-          <td>${book["Title"] || ""}</td>
-          <td>${book["Author"] || ""}</td>
-          <td>${book["Genre"] || ""}</td>
-          <td>${book["Current Status"] || ""}</td>
-          <td>
-            ${book["Current Status"] === "Available" 
-              ? `<a href="https://t.me/biblioteka_danang_bot?start=request_borrow_${book['Book ID']}" target="_blank">Take book</a>` 
-              : `<a href="https://t.me/biblioteka_danang_bot?start=wlist_${book['Book ID']}" target="_blank">Take line</a>`}
-          </td>
-        `;
+        // Title
+        const titleCell = document.createElement("td");
+        titleCell.textContent = book["Title"] || "";
+        row.appendChild(titleCell);
+    
+        // Author
+        const authorCell = document.createElement("td");
+        authorCell.textContent = book["Author"] || "";
+        row.appendChild(authorCell);
+    
+        // Status
+        const statusCell = document.createElement("td");
+        statusCell.textContent = book["Current Status"] || "";
+        row.appendChild(statusCell);
+    
+        // Genre
+        const genreCell = document.createElement("td");
+        genreCell.textContent = book["Genre"] || "";
+        row.appendChild(genreCell);
+    
+        // Action link logic
+        const actionCell = document.createElement("td");
+        if (book["Current Status"] === "Available") {
+          const link = document.createElement("a");
+          link.href = `https://t.me/biblioteka_danang_bot?start=request_borrow_${book["Book ID"]}`;
+          link.textContent = "Take book";
+          link.target = "_blank";
+          actionCell.appendChild(link);
+        } else if (book["Current Status"] === "Borrowed") {
+          const link = document.createElement("a");
+          link.href = `https://t.me/biblioteka_danang_bot?start=wlist_${book["Book ID"]}`;
+          link.textContent = "Take line";
+          link.target = "_blank";
+          actionCell.appendChild(link);
+        } else {
+          actionCell.textContent = "-";
+        }
+        row.appendChild(actionCell);
     
         tbody.appendChild(row);
       });
     }
+
 
 
     function filterBooks() {
