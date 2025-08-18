@@ -34,28 +34,29 @@
     const publicSpreadsheetUrl = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRQqir_B-_AnqRrFHeRkFHRETbe76WvGeF5nXcacHMNVAOtUHORA77jrULyNei6OFuJBylXXWzUL1JG/pub?output=csv";
     let books = [];
 
-    function renderTable(filtered) {
-      const tbody = document.querySelector("#booksTable tbody");
+    function renderTable(data) {
+      const tbody = document.querySelector("#resultsTable tbody");
       tbody.innerHTML = "";
-
-      const sorted = [...filtered].sort((a, b) => {
-        if (a["Current Status"].toLowerCase() === "available" && b["Current Status"].toLowerCase() !== "available") return -1;
-        if (a["Current Status"].toLowerCase() !== "available" && b["Current Status"].toLowerCase() === "available") return 1;
-        return a.Title.localeCompare(b.Title);
-      });
-
-      sorted.forEach(b => {
-        const tr = document.createElement("tr");
-        tr.innerHTML = `
-          <td>${b.Title}</td>
-          <td>${b.Author}</td>
-          <td>${b["Current Status"]}</td>
-          <td>${b.Genre}</td>
-          <td><a href="${b["Bot Link"]}" target="_blank">Borrow</a></td>
+    
+      data.forEach(book => {
+        const row = document.createElement("tr");
+    
+        row.innerHTML = `
+          <td>${book["Title"] || ""}</td>
+          <td>${book["Author"] || ""}</td>
+          <td>${book["Genre"] || ""}</td>
+          <td>${book["Current Status"] || ""}</td>
+          <td>
+            ${book["Current Status"] === "Available" 
+              ? `<a href="https://t.me/biblioteka_danang_bot?start=request_borrow_${book['Book ID']}" target="_blank">Take book</a>` 
+              : `<a href="https://t.me/biblioteka_danang_bot?start=wlist_${book['Book ID']}" target="_blank">Take line</a>`}
+          </td>
         `;
-        tbody.appendChild(tr);
+    
+        tbody.appendChild(row);
       });
     }
+
 
     function filterBooks() {
       const query = document.getElementById("searchInput").value.toLowerCase();
