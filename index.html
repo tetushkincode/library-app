@@ -1,63 +1,29 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <title>Library Catalog</title>
+  <meta charset="UTF-8">
+  <title>Library App</title>
   <style>
-    body {
-      font-family: Arial, sans-serif;
-      margin: 20px;
-    }
-    h1 {
-      text-align: center;
-    }
-    .controls {
-      margin-bottom: 20px;
-      display: flex;
-      gap: 10px;
-      justify-content: center;
-      flex-wrap: wrap;
-    }
-    input, select, label {
-      font-size: 16px;
-      padding: 5px;
-    }
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      margin-top: 10px;
-    }
-    th, td {
-      border: 1px solid #ccc;
-      padding: 8px;
-      text-align: left;
-    }
-    th {
-      background-color: #f2f2f2;
-    }
-    td a {
-      color: blue;
-      text-decoration: none;
-      font-weight: bold;
-    }
-    td a:hover {
-      text-decoration: underline;
-    }
+    body { font-family: Arial, sans-serif; margin: 20px; }
+    table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+    th, td { border: 1px solid #ccc; padding: 8px; text-align: left; }
+    th { background: #f4f4f4; }
+    .controls { margin-bottom: 20px; }
   </style>
 </head>
 <body>
-  <h1>📚 My Library</h1>
+  <h1>📚 Library Catalog</h1>
 
   <div class="controls">
     <label>
       Search:
-      <input type="text" id="searchBox" placeholder="Search by title, author, or genre...">
+      <input type="text" id="searchInput" placeholder="Title, Author, or Genre">
     </label>
 
     <label>
       Genre:
       <select id="genreFilter">
-        <option value="">All Genres</option>
+        <option value="">All</option>
       </select>
     </label>
 
@@ -79,59 +45,64 @@
     <tbody></tbody>
   </table>
 
-  <!-- Load Tabletop.js -->
-  <script src="https://unpkg.com/tabletop@1.6.0/src/tabletop.js"></script>
+  <!-- Tabletop.js -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/tabletop.js/1.5.4/tabletop.min.js"></script>
   <script>
-    const publicSpreadsheetUrl = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRQqir_B-_AnqRrFHeRkFHRETbe76WvGeF5nXcacHMNVAOtUHORA77jrULyNei6OFuJBylXXWzUL1JG/pub?output=csv';
-    let allData = [];
+    let allBooks = [];
+
+    window.addEventListener('DOMContentLoaded', init);
 
     function init() {
       Tabletop.init({
-        key: publicSpreadsheetUrl,
-        simpleSheet: true,
-        callback: function(data) {
-          allData = data;
-          populateGenres(data);
-          renderTable(data);
-        }
+        key: '1vRQqir_B-_AnqRrFHeRkFHRETbe76WvGeF5nXcacHMNVAOtUHORA77jrULyNei6OFuJBylXXWzUL1JG',
+        callback: showInfo,
+        simpleSheet: true
       });
+    }
 
-      document.getElementById("searchBox").addEventListener("input", applyFilters);
+    function showInfo(data) {
+      console.log("Fetched data:", data); // Debugging
+      allBooks = data;
+      populateGenreFilter(data);
+      renderTable(data);
+
+      document.getElementById("searchInput").addEventListener("input", applyFilters);
       document.getElementById("genreFilter").addEventListener("change", applyFilters);
       document.getElementById("availableOnly").addEventListener("change", applyFilters);
     }
 
-    function populateGenres(data) {
+    function populateGenreFilter(data) {
       const genreSet = new Set();
-      data.forEach(row => {
-        if (row.Genre) {
-          row.Genre.split(",").map(g => g.trim()).forEach(g => genreSet.add(g));
+      data.forEach(book => {
+        if (book["Genre"]) {
+          book["Genre"].split(",").map(g => g.trim()).forEach(g => genreSet.add(g));
         }
       });
-      const genreFilter = document.getElementById("genreFilter");
-      genreSet.forEach(g => {
-        const opt = document.createElement("option");
-        opt.value = g;
-        opt.textContent = g;
-        genreFilter.appendChild(opt);
+
+      const select = document.getElementById("genreFilter");
+      genreSet.forEach(genre => {
+        const option = document.createElement("option");
+        option.value = genre;
+        option.textContent = genre;
+        select.appendChild(option);
       });
     }
 
     function applyFilters() {
-      const search = document.getElementById("searchBox").value.toLowerCase();
+      const query = document.getElementById("searchInput").value.toLowerCase();
       const genre = document.getElementById("genreFilter").value;
       const availableOnly = document.getElementById("availableOnly").checked;
 
-      let filtered = allData.filter(row => {
-        let matchesSearch =
-          row.Title.toLowerCase().includes(search) ||
-          row.Author.toLowerCase().includes(search) ||
-          row.Genre.toLowerCase().includes(search);
+      const filtered = allBooks.filter(book => {
+        const matchesQuery =
+          book["Title"].toLowerCase().includes(query) ||
+          book["Author"].toLowerCase().includes(query) ||
+          (book["Genre"] && book["Genre"].toLowerCase().includes(query));
 
-        let matchesGenre = !genre || row.Genre.split(",").map(g => g.trim()).includes(genre);
-        let matchesAvailable = !availableOnly || row["Current Status"] === "Available";
+        const matchesGenre = !genre || (book["Genre"] && book["Genre"].includes(genre));
+        const matchesAvailability = !availableOnly || book["Current Status"] === "Available";
 
-        return matchesSearch && matchesGenre && matchesAvailable;
+        return matchesQuery && matchesGenre && matchesAvailability;
       });
 
       renderTable(filtered);
@@ -141,27 +112,38 @@
       const tbody = document.querySelector("#booksTable tbody");
       tbody.innerHTML = "";
 
-      data.forEach(row => {
+      data.forEach(book => {
         const tr = document.createElement("tr");
 
-        tr.innerHTML += `<td>${row.Title}</td>`;
-        tr.innerHTML += `<td>${row.Author}</td>`;
-        tr.innerHTML += `<td>${row.Genre}</td>`;
-        tr.innerHTML += `<td>${row["Current Status"]}</td>`;
+        const titleTd = document.createElement("td");
+        titleTd.textContent = book["Title"];
 
-        let actionHtml = "";
-        if (row["Current Status"] === "Available") {
-          actionHtml = `<a href="http://t.me/biblioteka_danang_bot?start=request_borrow_${row["Book ID"]}" target="_blank">Take book</a>`;
-        } else if (row["Current Status"] === "Borrowed") {
-          actionHtml = `<a href="http://t.me/biblioteka_danang_bot?start=wlist_${row["Book ID"]}" target="_blank">Take line</a>`;
+        const authorTd = document.createElement("td");
+        authorTd.textContent = book["Author"];
+
+        const genreTd = document.createElement("td");
+        genreTd.textContent = book["Genre"];
+
+        const statusTd = document.createElement("td");
+        statusTd.textContent = book["Current Status"];
+
+        const actionTd = document.createElement("td");
+        if (book["Current Status"] === "Available") {
+          actionTd.innerHTML = `<a href="http://t.me/biblioteka_danang_bot?start=request_borrow_${book["Book ID"]}" target="_blank">Take book</a>`;
+        } else if (book["Current Status"] === "Borrowed") {
+          actionTd.innerHTML = `<a href="http://t.me/biblioteka_danang_bot?start=wlist_${book["Book ID"]}" target="_blank">Take line</a>`;
+        } else {
+          actionTd.textContent = "-";
         }
 
-        tr.innerHTML += `<td>${actionHtml}</td>`;
+        tr.appendChild(titleTd);
+        tr.appendChild(authorTd);
+        tr.appendChild(genreTd);
+        tr.appendChild(statusTd);
+        tr.appendChild(actionTd);
         tbody.appendChild(tr);
       });
     }
-
-    window.addEventListener("DOMContentLoaded", init);
   </script>
 </body>
 </html>
