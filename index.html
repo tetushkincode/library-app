@@ -97,6 +97,46 @@
     #filters label {
       font-size: 15px;
     }
+
+
+
+    @media (max-width: 600px) {
+      #booksTable,
+      #booksTable thead,
+      #booksTable tbody,
+      #booksTable th,
+      #booksTable td,
+      #booksTable tr {
+        display: block;
+        width: 100%;
+      }
+    
+      #booksTable thead {
+        display: none; /* hide header */
+      }
+    
+      #booksTable tr {
+        margin-bottom: 15px;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        padding: 10px;
+        background: #fafafa;
+      }
+    
+      #booksTable td {
+        display: flex;
+        justify-content: space-between;
+        padding: 6px 0;
+      }
+    
+      #booksTable td::before {
+        content: attr(data-label);
+        font-weight: bold;
+        flex-basis: 40%;
+        text-align: left;
+      }
+    }
+
     
   </style>
 
@@ -149,16 +189,19 @@
         // Title
         const titleCell = document.createElement("td");
         titleCell.textContent = book["Title"] || "";
+        titleCell.setAttribute("data-label", "Title");
         row.appendChild(titleCell);
     
         // Author
         const authorCell = document.createElement("td");
         authorCell.textContent = book["Author"] || "";
+        authorCell.setAttribute("data-label", "Author");
         row.appendChild(authorCell);
       
         // Action link logic
         const actionCell = document.createElement("td");
-        actionCell.classList.add("action-col");   // 👈 add class
+        actionCell.classList.add("action-col"); 
+        actionCell.setAttribute("data-label", "Action");
         if (book["Current Status"] === "Available") {
           const link = document.createElement("a");
           link.href = `https://t.me/biblioteka_danang_bot?start=request_borrow_${book["Book ID"]}`;
