@@ -56,19 +56,17 @@
       background-color: #707579;
     }
 
-    #loader {
-      font-size: 18px;
-      font-weight: bold;
-      color: #4A95D6;
-      margin: 20px 0;
+   .loading {
       animation: blink 1s infinite;
+      color: #4A95D6;
+      font-weight: bold;
     }
     
-    /* Simple blinking animation */
     @keyframes blink {
       0%, 50%, 100% { opacity: 1; }
       25%, 75% { opacity: 0.3; }
     }
+
 
   </style>
 </head>
@@ -83,7 +81,6 @@
 
   <h1 id="resultsCount">Found – 0 books</h1>
 
-  <div id="loader">⏳ Loading books...</div>
 
   <table id="booksTable">
     <thead>
@@ -102,9 +99,6 @@
   <script>
     const publicSpreadsheetUrl = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSsbONmnLPfGlepVvJkasahs9_BQaYspP4rK15IFRhRqXkcPGTdWsog5XoxL0T0Eid5GL3VU2I3otzD/pub?gid=0&single=true&output=csv";
     let books = [];
-
-    document.getElementById("loader").style.display = "none";
-
     
     function renderTable(data) {
       const tbody = document.querySelector("#booksTable tbody");
@@ -189,11 +183,16 @@
 
     // Load CSV
     Papa.parse(publicSpreadsheetUrl, {
+      document.getElementById("resultsCount").textContent = "Loading books...";
+      document.getElementById("resultsCount").classList.add("loading");
       download: true,
       header: true,
       complete: function(results) {
         books = results.data.filter(row => row.Title); // remove empty rows
         renderTable(books);
+        document.getElementById("resultsCount").classList.remove("loading");
+        document.getElementById("resultsCount").textContent = `Found – ${books.length} books`;
+
 
         // fill dropdown with unique genres
         const genres = [...new Set(books.flatMap(b => b.Genre.split(",").map(g => g.trim())))];
