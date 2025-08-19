@@ -65,14 +65,16 @@
         const authorCell = document.createElement("td");
         authorCell.textContent = book["Author"] || "";
         row.appendChild(authorCell);
-    
+      
         // Status
         const statusCell = document.createElement("td");
         statusCell.textContent = book["Current Status"] || "";
+        statusCell.classList.add("status-col");   // 👈 add class
         row.appendChild(statusCell);
-
+        
         // Action link logic
         const actionCell = document.createElement("td");
+        actionCell.classList.add("action-col");   // 👈 add class
         if (book["Current Status"] === "Available") {
           const link = document.createElement("a");
           link.href = `https://t.me/biblioteka_danang_bot?start=request_borrow_${book["Book ID"]}`;
@@ -89,12 +91,13 @@
           actionCell.textContent = "-";
         }
         row.appendChild(actionCell);
-            
+        
         // Genre
         const genreCell = document.createElement("td");
         genreCell.textContent = book["Genre"] || "";
+        genreCell.classList.add("genre-col");     // 👈 add class
         row.appendChild(genreCell);
-    
+
 
         tbody.appendChild(row);
       });
