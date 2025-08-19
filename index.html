@@ -14,11 +14,11 @@
     }
 
     #booksTable tbody tr:nth-child(even) {
-      background-color: #f3f3f3;  /* light grey */
+      background-color: #f2f2f2;  /* light grey */
     }
     
     #booksTable th {
-      background: #e2e2e2;
+      background: #e5e5e5;
       font-weight: bold;
     }
     
@@ -27,6 +27,9 @@
       white-space: nowrap;   /* prevents wrapping */
       width: 1%;             /* lets it shrink to fit */
     }
+    #booksTable th.librarian-col,
+    #booksTable td.librarian-col,
+    
     #booksTable th.status-col,
     #booksTable td.status-col {
       display: none;
@@ -39,7 +42,7 @@
     #booksTable td.action-col a {
       display: inline-block;
       padding: 6px 14px;
-      border-radius: 12px;
+      border-radius: 24px;
       color: white;
       text-decoration: none;
       font-size: 14px;
@@ -88,8 +91,8 @@
   <table id="booksTable">
     <thead>
       <tr>
-        <th>Title</th>
-        <th>Author</th>
+        <th class="title-col">Title</th>
+        <th class="author-col">Author</th>
         <th class="action-col">Action</th>
         <th class="genre-col">Genre</th>
         <th class="librarian-col">Librarian</th>
