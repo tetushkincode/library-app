@@ -100,24 +100,22 @@
 
 
 
+
+    
+
     @media (max-width: 600px) {
+      /* Hide the table head completely */
+      #booksTable thead {
+        display: none !important;
+      }
+    
+      /* Turn rows into cards */
       #booksTable,
-      #booksTable thead,
       #booksTable tbody,
-      #booksTable th,
-      #booksTable td,
       #booksTable tr {
         display: block;
         width: 100%;
       }
-    
-      @media (max-width: 600px) {
-        #booksTable thead {
-          display: none !important;
-        }
-      }
-
-      
     
       #booksTable tr {
         margin-bottom: 15px;
@@ -127,33 +125,25 @@
         background: #fafafa;
       }
     
+      /* Each cell is a block, left-aligned */
       #booksTable td {
-        display: flex;
-        justify-content: space-between;
+        display: block;
+        text-align: left;
         padding: 6px 0;
       }
-      @media (max-width: 600px) {
-        #booksTable td {
-          display: block;
-          text-align: left;   /* ✅ keeps text/buttons aligned */
-          padding: 6px 0;
-        }
-      }
     
+      /* Optional: remove label before text if you don’t want "Title:" showing */
       #booksTable td::before {
-        content: attr(data-label);
-        font-weight: bold;
-        flex-basis: 40%;
-        text-align: left;
+        display: none;
+      }
+    
+      /* Buttons stay inline */
+      #booksTable td.action-col a {
+        margin-top: 6px;
+        display: inline-block;
       }
     }
-    #booksTable td.action-col a {
-      margin-top: 4px;
-      display: inline-block;
-    }
 
-
-    
   </style>
 
 
