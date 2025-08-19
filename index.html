@@ -37,9 +37,9 @@
       <tr>
         <th>Title</th>
         <th>Author</th>
-        <th class="status-col">Status</th>
         <th class="action-col">Action</th>
-        <th  class="genre-col">Genre</th>
+        <th class="genre-col">Genre</th>
+        <th class="status-col">Status</th>
       </tr>
     </thead>
     <tbody></tbody>
@@ -67,12 +67,6 @@
         authorCell.textContent = book["Author"] || "";
         row.appendChild(authorCell);
       
-        // Status
-        const statusCell = document.createElement("td");
-        statusCell.textContent = book["Current Status"] || "";
-        statusCell.classList.add("status-col");   // 👈 add class
-        row.appendChild(statusCell);
-        
         // Action link logic
         const actionCell = document.createElement("td");
         actionCell.classList.add("action-col");   // 👈 add class
@@ -99,7 +93,12 @@
         genreCell.classList.add("genre-col");     // 👈 add class
         row.appendChild(genreCell);
 
-
+        // Status
+        const statusCell = document.createElement("td");
+        statusCell.textContent = book["Current Status"] || "";
+        statusCell.classList.add("status-col");   // 👈 add class
+        row.appendChild(statusCell);
+        
         tbody.appendChild(row);
       });
     }
