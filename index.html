@@ -32,6 +32,8 @@
   </select>
   <label><input type="checkbox" id="availableOnly"> Available only</label>
 
+  <div id="resultsCount">Found – 0 books</div>
+  
   <table id="booksTable">
     <thead>
       <tr>
@@ -101,6 +103,9 @@
         
         tbody.appendChild(row);
       });
+
+      document.getElementById("resultsCount").textContent = `Found – ${data.length} books`;
+
     }
 
 
