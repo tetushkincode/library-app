@@ -55,6 +55,21 @@
     #booksTable td.action-col a.take-line {
       background-color: #707579;
     }
+
+    #loader {
+      font-size: 18px;
+      font-weight: bold;
+      color: #4A95D6;
+      margin: 20px 0;
+      animation: blink 1s infinite;
+    }
+    
+    /* Simple blinking animation */
+    @keyframes blink {
+      0%, 50%, 100% { opacity: 1; }
+      25%, 75% { opacity: 0.3; }
+    }
+
   </style>
 </head>
 <body>
@@ -67,7 +82,9 @@
   <label><input type="checkbox" id="availableOnly"> Available only</label>
 
   <h1 id="resultsCount">Found – 0 books</h1>
-  
+
+  <div id="loader">⏳ Loading books...</div>
+
   <table id="booksTable">
     <thead>
       <tr>
@@ -86,6 +103,9 @@
     const publicSpreadsheetUrl = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSsbONmnLPfGlepVvJkasahs9_BQaYspP4rK15IFRhRqXkcPGTdWsog5XoxL0T0Eid5GL3VU2I3otzD/pub?gid=0&single=true&output=csv";
     let books = [];
 
+    document.getElementById("loader").style.display = "none";
+
+    
     function renderTable(data) {
       const tbody = document.querySelector("#booksTable tbody");
       tbody.innerHTML = "";
