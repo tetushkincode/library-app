@@ -74,21 +74,49 @@
       25%, 75% { opacity: 0.3; }
     }
 
+    #filters {
+      display: flex;
+      flex-direction: column;   /* stack vertically */
+      gap: 10px;                /* spacing between rows */
+      max-width: 400px;         /* keeps it tidy on wide screens */
+    }
+    
+    #filters input,
+    #filters select,
+    #filters label {
+      width: 100%;              /* full width on mobile */
+      box-sizing: border-box;
+    }
 
+    #filters input,
+    #filters select {
+      padding: 10px;
+      font-size: 16px;   /* better for tapping */
+    }
+    
+    #filters label {
+      font-size: 15px;
+    }
+    
   </style>
+
+
+  
 </head>
 <body>
   <h2>📚 My Library</h2>
-
-  <input type="text" id="searchInput" placeholder="Search by title, author, or genre">
-  <select id="genreFilter">
-    <option value="">All Genres</option>
-  </select>
-  <select id="librarianFilter">
-    <option value="">All Librarians</option>
-  </select>
-  <label><input type="checkbox" id="availableOnly"> Available only</label>
-
+  
+  <div id="filters">
+    <input type="text" id="searchInput" placeholder="Search by title, author, or genre">
+    <select id="genreFilter">
+      <option value="">All Genres</option>
+    </select>
+    <select id="librarianFilter">
+      <option value="">All Librarians</option>
+    </select>
+    <label><input type="checkbox" id="availableOnly"> Available only</label>
+  </div>
+    
   <h1 id="resultsCount">Found – 0 books</h1>
 
 
