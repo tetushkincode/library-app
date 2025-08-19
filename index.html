@@ -14,7 +14,7 @@
     }
 
     #booksTable tbody tr:nth-child(even) {
-      background-color: #efefef;  /* light grey */
+      background-color: #f3f3f3;  /* light grey */
     }
     
     #booksTable th {
@@ -38,8 +38,8 @@
     /* Base button style */
     #booksTable td.action-col a {
       display: inline-block;
-      padding: 6px 12px;
-      border-radius: 8px;
+      padding: 6px 14px;
+      border-radius: 12px;
       color: white;
       text-decoration: none;
       font-size: 14px;
@@ -77,6 +77,9 @@
   <select id="genreFilter">
     <option value="">All Genres</option>
   </select>
+  <select id="librarianFilter">
+    <option value="">All Librarians</option>
+  </select>
   <label><input type="checkbox" id="availableOnly"> Available only</label>
 
   <h1 id="resultsCount">Found – 0 books</h1>
@@ -89,6 +92,7 @@
         <th>Author</th>
         <th class="action-col">Action</th>
         <th class="genre-col">Genre</th>
+        <th class="librarian-col">Librarian</th>
         <th class="status-col">Status</th>
       </tr>
     </thead>
@@ -146,6 +150,13 @@
         genreCell.classList.add("genre-col");     // 👈 add class
         row.appendChild(genreCell);
 
+        // Librarian
+        const librarianCell = document.createElement("td");
+        librarianCell.textContent = book["Responsible Librarian Username"] || "";
+        librarianCell.classList.add("librarian-col");
+        row.appendChild(librarianCell);
+
+        
         // Status
         const statusCell = document.createElement("td");
         statusCell.textContent = book["Current Status"] || "";
@@ -165,18 +176,21 @@
       const query = document.getElementById("searchInput").value.toLowerCase();
       const genre = document.getElementById("genreFilter").value;
       const availableOnly = document.getElementById("availableOnly").checked;
-
+      const librarian = document.getElementById("librarianFilter").value;
+      
       const filtered = books.filter(b => {
         const matchSearch =
           b.Title.toLowerCase().includes(query) ||
           b.Author.toLowerCase().includes(query) ||
           b.Genre.toLowerCase().includes(query);
-
+      
         const matchGenre = genre ? b.Genre.toLowerCase().includes(genre.toLowerCase()) : true;
         const matchAvailable = availableOnly ? b["Current Status"].toLowerCase() === "available" : true;
-
-        return matchSearch && matchGenre && matchAvailable;
+        const matchLibrarian = librarian ? b["Responsible Librarian Username"] === librarian : true;
+      
+        return matchSearch && matchGenre && matchAvailable && matchLibrarian;
       });
+
 
       renderTable(filtered);
     }
@@ -205,12 +219,24 @@
           opt.textContent = g;
           genreFilter.appendChild(opt);
         });
+        
+        // fill dropdown with unique librarians
+        const librarians = [...new Set(books.map(b => b["Responsible Librarian Username"]).filter(Boolean))];
+        const librarianFilter = document.getElementById("librarianFilter");
+        librarians.sort().forEach(l => {
+          const opt = document.createElement("option");
+          opt.value = l;
+          opt.textContent = l;
+          librarianFilter.appendChild(opt);
+        });
       }
     });
 
     document.getElementById("searchInput").addEventListener("input", filterBooks);
     document.getElementById("genreFilter").addEventListener("change", filterBooks);
     document.getElementById("availableOnly").addEventListener("change", filterBooks);
+    document.getElementById("librarianFilter").addEventListener("change", filterBooks);
+
   </script>
 </body>
 </html>
