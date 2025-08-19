@@ -181,17 +181,19 @@
       renderTable(filtered);
     }
 
+    document.getElementById("resultsCount").textContent = "Loading books...";
+    document.getElementById("resultsCount").classList.add("loading");  
+    
     // Load CSV
     Papa.parse(publicSpreadsheetUrl, {
-      document.getElementById("resultsCount").textContent = "Loading books...";
-      document.getElementById("resultsCount").classList.add("loading");
       download: true,
       header: true,
       complete: function(results) {
         books = results.data.filter(row => row.Title); // remove empty rows
         renderTable(books);
-        document.getElementById("resultsCount").classList.remove("loading");
-        document.getElementById("resultsCount").textContent = `Found – ${books.length} books`;
+        
+    document.getElementById("resultsCount").classList.remove("loading");
+    document.getElementById("resultsCount").textContent = `Found – ${books.length} books`;
 
 
         // fill dropdown with unique genres
