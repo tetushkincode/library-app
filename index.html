@@ -336,15 +336,32 @@
           genreFilter.appendChild(opt);
         });
         
-        // fill dropdown with unique librarians
+        // mapping librarian usernames -> names
+        const librarianMap = {
+          "alisss_kaa": "Alisa",
+          "it1st1m3": "Sonya",
+          "nganigga": "Nikita"
+          "illeeeya": "Inna"
+          "tetushkin": "Oleg"
+          // add others...
+        };
+        
+        // fill librarians dropdown with unique librarians
         const librarians = [...new Set(books.map(b => b["Responsible Librarian Username"]).filter(Boolean))];
         const librarianFilter = document.getElementById("librarianFilter");
-        librarians.sort().forEach(l => {
+        
+        // reset dropdown
+        librarianFilter.innerHTML = '<option value="">All librarians</option>';
+        
+        librarians.sort().forEach(username => {
           const opt = document.createElement("option");
-          opt.value = l;
-          opt.textContent = l;
+          opt.value = username; // still filter by username internally
+          opt.textContent = librarianMap[username] || username; // show name instead
           librarianFilter.appendChild(opt);
         });
+
+
+        
       }
     });
 
