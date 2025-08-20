@@ -113,30 +113,32 @@
       margin: 0;            /* reset margins */
     }
 
-    .logo {
-      height: 2em;        /* 1.2em is the same height as text line */
-      vertical-align: middle; /* aligns with text baseline */
-      margin-right: 6px;    /* small gap before text */
+    .header {
+      display: flex;
+      align-items: center;
+      gap: 12px;       /* space between logo and text */
     }
-
+    
     .logo {
-      height: 1.6em;           /* scales with text size */
-      width: 1.6em;            /* keep it square */
-      object-fit: cover;       /* crop inside circle */
-      border-radius: 50%;      /* makes it circle */
-      vertical-align: middle;  /* align with text */
-      margin-right: 8px;       /* small space before text */
+      width: 60px;     /* adjust size */
+      height: 60px;
+      border-radius: 50%;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    
+    .logo svg {
+      width: 100%;
+      height: 100%;
     }
 
 
 
     
+    
     @media (max-width: 600px) {
-      .logo {
-        height: 2.2em;
-        width: 2.2em;
-        margin-right: 10px;
-      }
       
       /* Hide the table head completely */
       #booksTable thead {
@@ -204,7 +206,20 @@
   
 </head>
 <body>
-  <h2><img src="https://raw.githubusercontent.com/tetushkincode/library-app/32c42f4b230c93f2a4d15751c830342d7d15d9a1/biblioteka-danang-logo.jpeg" alt="Logo" class="logo">Библиотека Дананга</h2>
+
+  <div class="header">
+    <div class="logo">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640" version="1.1">
+        <path fill="#00A1FC" d="M1.436486,640.215698 C1.000000,428.572571 1.000000,217.145157 1.000000,5.358849 
+          C213.688431,5.358849 426.376953,5.358849 639.532715,5.358849 
+          C639.532715,215.951813 639.532715,426.910431 639.532715,638.333679 
+          C427.114899,638.333679 214.500122,638.333679 1.436486,640.215698 Z"/>
+      </svg>
+    </div>
+    <h2>Библиотека Дананга</h2>
+  </div>
+
+
   
   <div id="filters">
     <input type="text" id="searchInput" placeholder="Поиск по названию, автору или жанру">
