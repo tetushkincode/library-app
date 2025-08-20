@@ -143,14 +143,21 @@
     
       /* Buttons stay inline but won’t break layout */
       #booksTable td.action-col a {
+        display: inline-block;     /* stay like buttons */
         margin-top: 6px;
-        display: inline-block;
-        max-width: 100%;
-        white-space: normal;   /* ✅ allow wrapping */
-      }
-    
-      /* ✅ make sure table itself doesn’t push wider than screen */
-      #booksTable {
+        padding: 8px 14px;
+        border-radius: 24px;
+        text-decoration: none;
+        color: #fff;
+        white-space: nowrap;       /* keep text in one line */
+        word-break: normal;        /* don’t break characters */
+          }
+        /* ensure action cell doesn't force overflow */
+        #booksTable td.action-col {
+          text-align: left;
+        }
+        /* ✅ make sure table itself doesn’t push wider than screen */
+        #booksTable {
         width: 100%;
         overflow-x: hidden;
       }
