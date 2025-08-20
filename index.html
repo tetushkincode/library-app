@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <title>Library Search</title>
   <style>
-    body { font-family: Arial, sans-serif; margin: 100px 20px 20px 20px; background-color: #ffffff; }
+    body { font-family: Arial, sans-serif; margin: 95px 20px 20px 20px; background-color: #ffffff; }
     table { border-collapse: collapse; width: 100%; margin-top: 10px; }
 
     th, td { 
@@ -93,6 +93,7 @@
       width: 100%;
       box-sizing: border-box;
       border-radius: 8px;
+      border: 1px solid #ddd;
       padding: 10px;
       font-size: 16px;   /* better for tapping */
     }
@@ -193,7 +194,7 @@
     <select id="librarianFilter">
       <option value="">Все библиотекари</option>
     </select>
-    <label><input type="checkbox" id="availableOnly">Только доступные книги, без очереди</label>
+    <label><input type="checkbox" id="availableOnly">Только доступные книги без очереди</label>
   </div>
     
   <h1 id="resultsCount">Найдено – 0 книг</h1>
