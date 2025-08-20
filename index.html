@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Library Search</title>
+  <title>Библиотека Дананга</title>
   <style>
     body { font-family: Arial, sans-serif; margin: 95px 20px 20px 20px; background-color: #ffffff; }
     table { border-collapse: collapse; width: 100%; margin-top: 10px; }
@@ -113,12 +113,31 @@
       margin: 0;            /* reset margins */
     }
 
+    .logo {
+      height: 2em;        /* 1.2em is the same height as text line */
+      vertical-align: middle; /* aligns with text baseline */
+      margin-right: 6px;    /* small gap before text */
+    }
 
+    .logo {
+      height: 1.6em;           /* scales with text size */
+      width: 1.6em;            /* keep it square */
+      object-fit: cover;       /* crop inside circle */
+      border-radius: 50%;      /* makes it circle */
+      vertical-align: middle;  /* align with text */
+      margin-right: 8px;       /* small space before text */
+    }
 
 
 
     
     @media (max-width: 600px) {
+      .logo {
+        height: 2.2em;
+        width: 2.2em;
+        margin-right: 10px;
+      }
+      
       /* Hide the table head completely */
       #booksTable thead {
         display: none !important;
@@ -185,7 +204,7 @@
   
 </head>
 <body>
-  <h2>📚 Библиотека Дананга</h2>
+  <h2><img src="library-danang-logo.png" alt="Logo" class="logo">Библиотека Дананга</h2>
   
   <div id="filters">
     <input type="text" id="searchInput" placeholder="Поиск по названию, автору или жанру">
