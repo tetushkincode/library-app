@@ -227,12 +227,14 @@
         // Title
         const titleCell = document.createElement("td");
         titleCell.textContent = book["Title"] || "";
+        genreCell.classList.add("title-col");
         titleCell.setAttribute("data-label", "Title");
         row.appendChild(titleCell);
     
         // Author
         const authorCell = document.createElement("td");
         authorCell.textContent = book["Author"] || "";
+        genreCell.classList.add("author-col");
         authorCell.setAttribute("data-label", "Author");
         row.appendChild(authorCell);
       
@@ -272,7 +274,6 @@
         librarianCell.classList.add("librarian-col");
         row.appendChild(librarianCell);
 
-        
         // Status
         const statusCell = document.createElement("td");
         statusCell.textContent = book["Current Status"] || "";
