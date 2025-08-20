@@ -185,28 +185,28 @@
   <h2>📚 My Library</h2>
   
   <div id="filters">
-    <input type="text" id="searchInput" placeholder="Search by title, author, or genre">
+    <input type="text" id="searchInput" placeholder="Поиск по названию, автору или жанру">
     <select id="genreFilter">
-      <option value="">All Genres</option>
+      <option value="">Все жанры</option>
     </select>
     <select id="librarianFilter">
-      <option value="">All Librarians</option>
+      <option value="">Все библиотекари</option>
     </select>
-    <label><input type="checkbox" id="availableOnly"> Available only</label>
+    <label><input type="checkbox" id="availableOnly">Только досутпные, без очереди</label>
   </div>
     
-  <h1 id="resultsCount">Found – 0 books</h1>
+  <h1 id="resultsCount">Найдено – 0 книг</h1>
 
 
   <table id="booksTable">
     <thead>
       <tr>
-        <th class="title-col">Title</th>
-        <th class="author-col">Author</th>
-        <th class="action-col">Action</th>
-        <th class="genre-col">Genre</th>
-        <th class="librarian-col">Librarian</th>
-        <th class="status-col">Status</th>
+        <th class="title-col">Название</th>
+        <th class="author-col">Автор</th>
+        <th class="action-col">Действие</th>
+        <th class="genre-col">Жанр</th>
+        <th class="librarian-col">Библиотекарь</th>
+        <th class="status-col">Статус</th>
       </tr>
     </thead>
     <tbody></tbody>
@@ -245,7 +245,7 @@
         if (book["Current Status"] === "Available") {
           const link = document.createElement("a");
           link.href = `https://t.me/biblioteka_danang_bot?start=request_borrow_${book["Book ID"]}`;
-          link.textContent = "Take book";
+          link.textContent = "Взять книгу";
           link.target = "_blank";
           link.classList.add("take-book");   // 🔹 add class
           actionCell.classList.add("action-col"); // mark cell as action column
@@ -253,7 +253,7 @@
         } else if (book["Current Status"] === "Borrowed") {
           const link = document.createElement("a");
           link.href = `https://t.me/biblioteka_danang_bot?start=wlist_${book["Book ID"]}`;
-          link.textContent = "Take line";
+          link.textContent = "Занять очередь";
           link.target = "_blank";
           link.classList.add("take-line");   // 🔹 add class
           actionCell.appendChild(link);
@@ -283,7 +283,7 @@
         tbody.appendChild(row);
       });
 
-      document.getElementById("resultsCount").textContent = `Found – ${data.length} books`;
+      document.getElementById("resultsCount").textContent = `Найдено – ${data.length} книг`;
 
     }
 
@@ -312,7 +312,7 @@
       renderTable(filtered);
     }
 
-    document.getElementById("resultsCount").textContent = "Loading books...";
+    document.getElementById("resultsCount").textContent = "Загрузка книг...";
     document.getElementById("resultsCount").classList.add("loading");  
     
     // Load CSV
@@ -324,7 +324,7 @@
         renderTable(books);
         
     document.getElementById("resultsCount").classList.remove("loading");
-    document.getElementById("resultsCount").textContent = `Found – ${books.length} books`;
+    document.getElementById("resultsCount").textContent = `Найдено – ${books.length} книг`;
 
 
         // fill dropdown with unique genres
@@ -352,7 +352,7 @@
         const librarianFilter = document.getElementById("librarianFilter");
         
         // reset dropdown
-        librarianFilter.innerHTML = '<option value="">All librarians</option>';
+        librarianFilter.innerHTML = '<option value="">Все библиотекари</option>';
         
         librarians.sort().forEach(username => {
           const opt = document.createElement("option");
