@@ -102,7 +102,6 @@
 
 
     
-
     @media (max-width: 600px) {
       /* Hide the table head completely */
       #booksTable thead {
@@ -123,6 +122,11 @@
         border-radius: 8px;
         padding: 10px;
         background: #fafafa;
+    
+        /* ✅ prevent overflow */
+        box-sizing: border-box;
+        overflow-wrap: break-word;
+        word-break: break-word;
       }
     
       /* Each cell is a block, left-aligned */
@@ -137,10 +141,18 @@
         display: none;
       }
     
-      /* Buttons stay inline */
+      /* Buttons stay inline but won’t break layout */
       #booksTable td.action-col a {
         margin-top: 6px;
         display: inline-block;
+        max-width: 100%;
+        white-space: normal;   /* ✅ allow wrapping */
+      }
+    
+      /* ✅ make sure table itself doesn’t push wider than screen */
+      #booksTable {
+        width: 100%;
+        overflow-x: hidden;
       }
     }
 
