@@ -208,6 +208,43 @@
       }
     }
 
+    .search-container {
+      position: relative;
+      display: inline-block;
+      width: 250px;
+    }
+    
+    .search-input {
+      width: 100%;
+      padding: 8px 32px 8px 10px; /* padding-right for the button */
+      font-size: 16px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      box-sizing: border-box;
+    }
+    
+    .clear-btn {
+      position: absolute;
+      right: 8px;
+      top: 50%;
+      transform: translateY(-50%);
+      background: #eee;
+      border: none;
+      font-size: 16px;
+      line-height: 1;
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      cursor: pointer;
+      display: none; /* hidden until text is typed */
+      align-items: center;
+      justify-content: center;
+      padding: 0;
+    }
+    
+    .clear-btn:hover {
+      background: #ddd;
+    }
   </style>
 
 
@@ -231,7 +268,10 @@
     <select id="genreFilter">
       <option value="">Все жанры</option>
     </select>
-    <input type="text" id="searchInput" placeholder="Поиск по названию, автору или жанру">
+    <div class="search-container">
+      <input type="text" id="searchInput" class="search-input" placeholder="Поиск по названию, автору или жанру">
+      <button id="clear-btn" class="clear-btn">×</button>
+    </div>
     <label><input type="checkbox" id="availableOnly">Только доступные книги без очереди</label>
   </div>
     
@@ -254,13 +294,29 @@
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
   <script>
-    document.getElementById("searchInput").addEventListener("keydown", function(event) {
+    const searchInput = document.getElementById("searchInput");
+    const clearBtn = document.getElementById("clear-btn");
+    
+    // Show/hide clear button depending on text
+    searchInput.addEventListener("input", () => {
+      clearBtn.style.display = searchInput.value ? "flex" : "none";
+    });
+    
+    // Clear field on button click
+    clearBtn.addEventListener("click", () => {
+      searchInput.value = "";
+      clearBtn.style.display = "none";
+      searchInput.focus(); // keep keyboard open
+    });
+    
+    // Close keyboard on Enter
+    searchInput.addEventListener("keydown", (event) => {
       if (event.key === "Enter") {
-        event.preventDefault();   // prevent form submit if inside <form>
-        this.blur();              // remove focus → closes keyboard
+        event.preventDefault();
+        searchInput.blur(); // close keyboard
       }
     });
-
+    
     
     const publicSpreadsheetUrl = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSsbONmnLPfGlepVvJkasahs9_BQaYspP4rK15IFRhRqXkcPGTdWsog5XoxL0T0Eid5GL3VU2I3otzD/pub?gid=0&single=true&output=csv";
     let books = [];
