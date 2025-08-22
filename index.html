@@ -284,7 +284,7 @@
     <label><input type="checkbox" id="availableOnly">Только доступные книги без очереди</label>
   </div>
     
-  <h1 id="resultsCount">Найдено – 0 книг</h1>
+  <h1 id="resultsCount">Не найдено книг</h1>
 
 
   <table id="booksTable">
@@ -303,6 +303,35 @@
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
   <script>
+
+    function getBooksCountText(count) {
+      if (count === 0) {
+        return "Не найдено книг";
+      }
+    
+      const lastDigit = count % 10;
+      const lastTwoDigits = count % 100;
+    
+      let verb, noun;
+    
+      if (lastDigit === 1 && lastTwoDigits !== 11) {
+        verb = "Найдена";
+        noun = "книга";
+      } else if (
+        [2, 3, 4].includes(lastDigit) &&
+        ![12, 13, 14].includes(lastTwoDigits)
+      ) {
+        verb = "Найдены";
+        noun = "книги";
+      } else {
+        verb = "Найдено";
+        noun = "книг";
+      }
+    
+      return `${verb} — ${count} ${noun}`;
+    }
+
+    
     const searchInput = document.getElementById("searchInput");
     const clearBtn = document.getElementById("clear-btn");
     
@@ -332,6 +361,7 @@
     
     const publicSpreadsheetUrl = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSsbONmnLPfGlepVvJkasahs9_BQaYspP4rK15IFRhRqXkcPGTdWsog5XoxL0T0Eid5GL3VU2I3otzD/pub?gid=0&single=true&output=csv";
     let books = [];
+
     
     function renderTable(data) {
       const tbody = document.querySelector("#booksTable tbody");
@@ -399,7 +429,10 @@
         tbody.appendChild(row);
       });
 
-      document.getElementById("resultsCount").textContent = `Найдено – ${data.length} книг`;
+      // old version with no plural forms
+      // document.getElementById("resultsCount").textContent = `Найдено – ${data.length} книг`;
+      document.getElementById("resultsCount").textContent = getBooksCountText(data.length);
+
 
     }
 
@@ -440,7 +473,9 @@
         renderTable(books);
         
     document.getElementById("resultsCount").classList.remove("loading");
-    document.getElementById("resultsCount").textContent = `Найдено – ${books.length} книг`;
+    // old version with no plural forms 
+    // document.getElementById("resultsCount").textContent = `Найдено – ${books.length} книг`;
+    document.getElementById("resultsCount").textContent = getBooksCountText(data.length);
 
 
         // fill dropdown with unique genres
