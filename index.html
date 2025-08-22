@@ -318,6 +318,7 @@
       if (event.key === "Enter") {
         event.preventDefault();
         searchInput.blur(); // close keyboard
+        delayedFilter();
       }
     });
     
@@ -474,11 +475,42 @@
       }
     });
 
+    /* Commented not delayed UI controls. Delayed is under here at the bottom of style tag
+    
     document.getElementById("searchInput").addEventListener("input", filterBooks);
     document.getElementById("genreFilter").addEventListener("change", filterBooks);
     document.getElementById("availableOnly").addEventListener("change", filterBooks);
     document.getElementById("librarianFilter").addEventListener("change", filterBooks);
+    */
+    
+    /* FAKE DELAY ON SEARCH AND FILTER */
+    let filterTimer = null;
 
+    function showLoading() {
+      const rc = document.getElementById("resultsCount");
+      rc.textContent = "Поиск книг...";
+      rc.classList.add("loading"); // you already use this class on first CSV load
+    }
+    
+    function delayedFilter(delayMs = 2000) {
+      clearTimeout(filterTimer);
+      showLoading();
+    
+      filterTimer = setTimeout(() => {
+        filterBooks(); // renders table and updates resultsCount text
+        // remove loading class after render
+        document.getElementById("resultsCount").classList.remove("loading");
+      }, delayMs);
+    }
+    
+    // Use delayed filtering on all UI controls
+    document.getElementById("searchInput").addEventListener("input", () => delayedFilter());
+    document.getElementById("genreFilter").addEventListener("change", () => delayedFilter());
+    document.getElementById("availableOnly").addEventListener("change", () => delayedFilter());
+    document.getElementById("librarianFilter").addEventListener("change", () => delayedFilter());
+
+    
+    
   </script>
 </body>
 </html>
