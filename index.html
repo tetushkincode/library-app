@@ -248,7 +248,7 @@
       background: transparent;
     }
 
-    .loading-table { opacity: 0.6; pointer-events: none; } /* dimm the table during fake loading delayedFilter() */
+    .loading-table { opacity: 0.4; pointer-events: none; } /* dimm the table during fake loading delayedFilter() */
     
   </style>
 
@@ -312,7 +312,8 @@
       searchInput.value = "";
       clearBtn.style.display = "none";
       searchInput.focus(); // keep keyboard open
-      filterBooks(); // 🔹 reset results when search cleared
+      //filterBooks(); // 🔹 reset results when search cleared — it was like that with no fake delay
+      delayedFilter(); // filterBooks with fake delay
     });
     
     // Close keyboard on Enter
