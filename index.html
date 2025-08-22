@@ -247,6 +247,8 @@
     .clear-btn:hover {
       background: transparent;
     }
+
+    .loading-table { opacity: 0.6; pointer-events: none; } /* dimm the table during fake loading delayedFilter() */
     
   </style>
 
@@ -490,16 +492,18 @@
       const rc = document.getElementById("resultsCount");
       rc.textContent = "Поиск книг...";
       rc.classList.add("loading"); // you already use this class on first CSV load
+      document.getElementById("booksTable").classList.add("loading-table"); // dimm the table
     }
     
-    function delayedFilter(delayMs = 2000) {
+    function delayedFilter(delayMs = 600) {
       clearTimeout(filterTimer);
       showLoading();
     
       filterTimer = setTimeout(() => {
         filterBooks(); // renders table and updates resultsCount text
-        // remove loading class after render
+        // remove loading class after render, remove loading-table class after after render (remove fake delay)
         document.getElementById("resultsCount").classList.remove("loading");
+        document.getElementById("booksTable").classList.remove("loading-table");
       }, delayMs);
     }
     
