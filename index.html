@@ -433,10 +433,26 @@
       // document.getElementById("resultsCount").textContent = `Найдено – ${data.length} книг`;
       document.getElementById("resultsCount").textContent = getBooksCountText(data.length);
 
-
+        // 🔹 after rendering table, attach handlers to links
+        setupActionButtons();
     }
 
 
+    // 🔹 Auto-close Mini App after clicking a button
+    function setupActionButtons() {
+      const links = document.querySelectorAll("#booksTable td.action-col a");
+  
+      links.forEach(link => {
+        link.addEventListener("click", function () {
+          // give Telegram time to open bot with parameters
+          setTimeout(() => {
+            if (window.Telegram && Telegram.WebApp) {
+              Telegram.WebApp.close();
+            }
+          }, 500); // half second delay
+        });
+      });
+    }
 
     function filterBooks() {
       const query = document.getElementById("searchInput").value.toLowerCase();
