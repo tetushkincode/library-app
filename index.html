@@ -390,7 +390,12 @@ z<!DOCTYPE html>
         actionCell.setAttribute("data-label", "Action");
         if (book["Current Status"] === "Available") {
           const link = document.createElement("a");
-          link.href = `https://t.me/biblioteka_danang_bot?start=request_borrow_${book["Book ID"]}`;
+          
+          //link.href = `https://t.me/biblioteka_danang_bot?start=request_borrow_${book["Book ID"]}`;
+          const url = `https://t.me/biblioteka_danang_bot?start=request_borrow_${book["Book ID"]}`;
+          link.setAttribute("data-url", url); // save link in data attribute
+          link.href = "#"; // avoid double-trigger
+          
           link.textContent = "Взять книгу";
           link.target = "_blank";
           link.classList.add("take-book");   // 🔹 add class
@@ -398,7 +403,12 @@ z<!DOCTYPE html>
           actionCell.appendChild(link);
         } else if (book["Current Status"] === "Borrowed") {
           const link = document.createElement("a");
-          link.href = `https://t.me/biblioteka_danang_bot?start=wlist_${book["Book ID"]}`;
+          
+          //link.href = `https://t.me/biblioteka_danang_bot?start=wlist_${book["Book ID"]}`;
+          const url = `https://t.me/biblioteka_danang_bot?start=wlist_${book["Book ID"]}`;
+          link.setAttribute("data-url", url); // save link in data attribute
+          link.href = "#"; // avoid double-trigger
+          
           link.textContent = "Занять очередь";
           link.target = "_blank";
           link.classList.add("take-line");   // 🔹 add class
@@ -439,31 +449,28 @@ z<!DOCTYPE html>
 
     }
 
-    // 🔹 Auto-close Mini App after clicking a button (cross-platform safe)
     function setupActionButtons() {
       const links = document.querySelectorAll("#booksTable td.action-col a");
     
       links.forEach(link => {
         link.addEventListener("click", function (e) {
-          e.preventDefault(); // stop normal <a> navigation
-    
-          const url = link.href;
+          e.preventDefault(); // stop normal navigation
+          const url = link.getAttribute("data-url");
     
           if (window.Telegram && Telegram.WebApp) {
-            // official safe method (closes Mini App correctly on iOS too)
             Telegram.WebApp.openTelegramLink(url);
     
-            // close Mini App after short delay (ensure navigation works first)
+            // extra delay for iOS quirk
             setTimeout(() => {
               Telegram.WebApp.close();
-            }, 300);
+            }, 1000);
           } else {
-            // fallback if opened in browser (outside Telegram)
             window.open(url, "_blank");
           }
         });
       });
     }
+
 
 
     function filterBooks() {
