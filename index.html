@@ -449,18 +449,24 @@ z<!DOCTYPE html>
 
     }
 
+
+
     function setupActionButtons() {
       const links = document.querySelectorAll("#booksTable td.action-col a");
     
       links.forEach(link => {
-        link.addEventListener("click", function (e) {
-          e.preventDefault(); // stop normal navigation
-          const url = link.getAttribute("data-url");
+        // remove old listener first (cloneNode trick or replaceWith)
+        const newLink = link.cloneNode(true); 
+        link.parentNode.replaceChild(newLink, link);
+    
+        newLink.addEventListener("click", function (e) {
+          e.preventDefault(); // stop default <a> action
+          const url = newLink.getAttribute("data-url");
     
           if (window.Telegram && Telegram.WebApp) {
             Telegram.WebApp.openTelegramLink(url);
     
-            // extra delay for iOS quirk
+            // give iOS some time
             setTimeout(() => {
               Telegram.WebApp.close();
             }, 1000);
@@ -471,6 +477,7 @@ z<!DOCTYPE html>
       });
     }
 
+    
 
 
     function filterBooks() {
