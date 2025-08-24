@@ -439,10 +439,13 @@ z<!DOCTYPE html>
         tbody.appendChild(row);
 
         
-        // 🔹 after rendering table, attach handlers to links
-        setupActionButtons();
+       
       });
 
+
+       // 🔹 after rendering table, attach handlers to links
+        setupActionButtons();
+      
       // old version with no plural forms
       // document.getElementById("resultsCount").textContent = `Найдено – ${data.length} книг`;
       document.getElementById("resultsCount").textContent = getBooksCountText(data.length);
