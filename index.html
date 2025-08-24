@@ -302,8 +302,9 @@
   </table>
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
-  <script>
 
+    console.log("Telegram.WebApp:", window.Telegram?.WebApp);
+    
     function getBooksCountText(count) {
       if (count === 0) {
         return "Не найдено книг";
@@ -433,26 +434,28 @@
       // document.getElementById("resultsCount").textContent = `Найдено – ${data.length} книг`;
       document.getElementById("resultsCount").textContent = getBooksCountText(data.length);
 
-        // 🔹 after rendering table, attach handlers to links
-        setupActionButtons();
+      // 🔹 after rendering table, attach handlers to links
+      setupActionButtons();
     }
 
 
-    // 🔹 Auto-close Mini App after clicking a button
     function setupActionButtons() {
       const links = document.querySelectorAll("#booksTable td.action-col a");
-  
+    
       links.forEach(link => {
         link.addEventListener("click", function () {
-          // give Telegram time to open bot with parameters
           setTimeout(() => {
-            if (window.Telegram && Telegram.WebApp) {
+            if (window.Telegram && Telegram.WebApp && typeof Telegram.WebApp.close === "function") {
+              console.log("Closing Mini App...");
               Telegram.WebApp.close();
+            } else {
+              console.log("Mini App close not available");
             }
-          }, 500); // half second delay
+          }, 500);
         });
       });
     }
+
 
     function filterBooks() {
       const query = document.getElementById("searchInput").value.toLowerCase();
