@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+z<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
@@ -440,20 +440,28 @@
 
     }
 
-
+    // 🔹 Auto-close Mini App after clicking a button (cross-platform safe)
     function setupActionButtons() {
       const links = document.querySelectorAll("#booksTable td.action-col a");
     
       links.forEach(link => {
-        link.addEventListener("click", function () {
-          setTimeout(() => {
-            if (window.Telegram && Telegram.WebApp && typeof Telegram.WebApp.close === "function") {
-              console.log("Closing Mini App...");
+        link.addEventListener("click", function (e) {
+          e.preventDefault(); // stop normal <a> navigation
+    
+          const url = link.href;
+    
+          if (window.Telegram && Telegram.WebApp) {
+            // official safe method (closes Mini App correctly on iOS too)
+            Telegram.WebApp.openTelegramLink(url);
+    
+            // close Mini App after short delay (ensure navigation works first)
+            setTimeout(() => {
               Telegram.WebApp.close();
-            } else {
-              console.log("Mini App close not available");
-            }
-          }, 2000);
+            }, 300);
+          } else {
+            // fallback if opened in browser (outside Telegram)
+            window.open(url, "_blank");
+          }
         });
       });
     }
