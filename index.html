@@ -428,14 +428,16 @@
         row.appendChild(statusCell);
         
         tbody.appendChild(row);
+
+        
+        // 🔹 after rendering table, attach handlers to links
+        setupActionButtons();
       });
 
       // old version with no plural forms
       // document.getElementById("resultsCount").textContent = `Найдено – ${data.length} книг`;
       document.getElementById("resultsCount").textContent = getBooksCountText(data.length);
 
-      // 🔹 after rendering table, attach handlers to links
-      setupActionButtons();
     }
 
 
