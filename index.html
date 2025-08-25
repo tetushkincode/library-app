@@ -1,10 +1,11 @@
-```html
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Библиотека Дананга</title>
+  <!-- New: Include Telegram WebApp script to ensure API availability -->
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
   <style>
     body { font-family: Arial, sans-serif; margin: 95px 20px 20px 20px; background-color: #ffffff;}
     table { border-collapse: collapse; width: 100%; margin-top: 10px; max-width: 650px; }
@@ -109,7 +110,7 @@
       color: black;
     }
     
-    /* ✅ fix checkbox + label inline */
+    /* fix checkbox + label inline */
     #filters label {
       display: flex;
       align-items: center;  /* keeps checkbox + text aligned */
@@ -170,7 +171,7 @@
         padding: 10px;
         background: #fafafa !important;
     
-        /* ✅ prevent overflow */
+        /* prevent overflow */
         box-sizing: border-box;
         overflow-wrap: break-word;
         word-break: break-word;
@@ -203,7 +204,7 @@
       #booksTable td.action-col {
         text-align: left;
       }
-      /* ✅ make sure table itself doesn’t push wider than screen */
+      /* make sure table itself doesn’t push wider than screen */
       #booksTable {
         width: 100%;
         overflow-x: hidden;
@@ -251,7 +252,7 @@
 
     .loading-table { opacity: 0.4; pointer-events: none; } /* dimm the table during fake loading delayedFilter() */
 
-    /* New: On-screen debug log styles */
+    /* On-screen debug log styles */
     #debugLog {
       position: fixed;
       bottom: 10px;
@@ -306,12 +307,12 @@
     <tbody></tbody>
   </table>
 
-  <!-- New: On-screen debug log container -->
+  <!-- On-screen debug log container -->
   <div id="debugLog"></div>
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
   <script>
-    // New: Helper function to append messages to on-screen debug log
+    // Helper function to append messages to on-screen debug log
     function logToScreen(message) {
       const debugLog = document.getElementById('debugLog');
       const logEntry = document.createElement('div');
@@ -320,7 +321,7 @@
       debugLog.scrollTop = debugLog.scrollHeight; // Auto-scroll to latest
     }
 
-    // New: Log initial Telegram.WebApp status
+    // Log initial Telegram.WebApp status
     logToScreen(`Telegram.WebApp available: ${!!(window.Telegram?.WebApp)}`);
 
     function getBooksCountText(count) {
@@ -378,7 +379,7 @@
     const publicSpreadsheetUrl = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSsbONmnLPfGlepVvJkasahs9_BQaYspP4rK15IFRhRqXkcPGTdWsog5XoxL0T0Eid5GL3VU2I3otzD/pub?gid=0&single=true&output=csv";
     let books = [];
 
-    // Updated: Removed e.preventDefault() since it works without it
+    // Updated: Unified handling for all devices with delayed link update
     function handleBorrowClick(e) {
       const link = e.target;
       try {
@@ -389,32 +390,35 @@
           logToScreen("Telegram.WebApp not available, using default link navigation");
           window.location.href = link.href;  // Fallback to default navigation
         }
-        // Update link appearance and behavior
-        link.textContent = 'Go back to bot';
-        link.classList.remove('take-book', 'take-line');
-        link.classList.add('go-back');
-        link.removeEventListener('click', handleBorrowClick);
-        link.addEventListener('click', handleCloseClick);
+        // Delay link update to ensure navigation completes
+        setTimeout(() => {
+          link.textContent = 'Go back to bot';
+          link.classList.remove('take-book', 'take-line');
+          link.classList.add('go-back');
+          link.href = 'https://t.me/biblioteka_danang_bot'; // Set fallback URL for "Go back"
+          link.removeEventListener('click', handleBorrowClick);
+          link.addEventListener('click', handleCloseClick);
+        }, 1000); // 1-second delay to allow navigation
       } catch (error) {
         logToScreen(`Error opening Telegram link: ${error.message}`);
         window.location.href = link.href;  // Fallback on error
       }
     }
 
-    // Updated: Handle "Go back" click with on-screen logging
+    // Updated: Handle "Go back" click with fallback redirect
     function handleCloseClick(e) {
-      e.preventDefault();  // Prevent default for close action
+      e.preventDefault();  // Prevent default to avoid unexpected navigation
       try {
         if (window.Telegram?.WebApp) {
           Telegram.WebApp.close();  // Try to close Mini App
           logToScreen("Closed Mini App via WebApp API");
         } else {
-          logToScreen("Telegram.WebApp not available, cannot close Mini App");
-          alert("Please return to the Telegram bot manually.");
+          logToScreen("Telegram.WebApp not available, redirecting to bot");
+          window.location.href = 'https://t.me/biblioteka_danang_bot'; // Fallback to bot URL
         }
       } catch (error) {
         logToScreen(`Error closing Mini App: ${error.message}`);
-        alert("Please return to the Telegram bot manually.");
+        window.location.href = 'https://t.me/biblioteka_danang_bot'; // Fallback on error
       }
     }
     
@@ -587,4 +591,3 @@
   </script>
 </body>
 </html>
-```
