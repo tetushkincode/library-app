@@ -369,7 +369,7 @@
 
     // New function to handle initial borrow/queue click
     function handleBorrowClick(e) {
-      e.preventDefault();  // Prevent default link navigation (since we're in a Mini App)
+      //e.preventDefault();  // Prevent default link navigation (since we're in a Mini App)
       const link = e.target;
       Telegram.WebApp.openTelegramLink(link.href);  // Open the deep link in Telegram
       link.textContent = 'Go back to bot';  // Change text as requested
@@ -381,7 +381,7 @@
 
     // New function to handle the "Go back" click
     function handleCloseClick(e) {
-      e.preventDefault();  // Prevent any default behavior
+      //e.preventDefault();  // Prevent any default behavior
       Telegram.WebApp.close();  // Close the Mini App window as requested
     }
     
