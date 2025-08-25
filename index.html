@@ -1,3 +1,4 @@
+```html
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -68,7 +69,7 @@
       background-color: #707579;
     }
 
-    /* "Go back" button */  /* <-- New: Style for updated link state */
+    /* "Go back" button */
     #booksTable td.action-col a.go-back {
       background-color: yellow;
       color: black;
@@ -84,10 +85,6 @@
       0%, 50%, 100% { opacity: 1; }
       25%, 75% { opacity: 0.3; }
     }
-
-
-
-
 
     #filters {
       display: flex;
@@ -124,9 +121,7 @@
     }
     
     #filters input[type="checkbox"] {
-      /*width: auto;*/          /* prevent checkbox from expanding */
       margin: 0;            /* reset margins */
-      /*transform: scale(1.3);*/
       width: 20px;
       height: 20px;
       border: 1px;
@@ -152,10 +147,6 @@
       width: 100%;
       height: 100%;
     }
-
-
-
-    
     
     @media (max-width: 600px) {
       
@@ -207,13 +198,13 @@
         color: #fff;
         white-space: nowrap;       /* keep text in one line */
         word-break: normal;        /* don’t break characters */
-          }
-        /* ensure action cell doesn't force overflow */
-        #booksTable td.action-col {
-          text-align: left;
-        }
-        /* ✅ make sure table itself doesn’t push wider than screen */
-        #booksTable {
+      }
+      /* ensure action cell doesn't force overflow */
+      #booksTable td.action-col {
+        text-align: left;
+      }
+      /* ✅ make sure table itself doesn’t push wider than screen */
+      #booksTable {
         width: 100%;
         overflow-x: hidden;
       }
@@ -259,21 +250,31 @@
     }
 
     .loading-table { opacity: 0.4; pointer-events: none; } /* dimm the table during fake loading delayedFilter() */
-    
+
+    /* New: On-screen debug log styles */
+    #debugLog {
+      position: fixed;
+      bottom: 10px;
+      left: 10px;
+      right: 10px;
+      max-height: 100px;
+      overflow-y: auto;
+      background: rgba(0, 0, 0, 0.8);
+      color: white;
+      padding: 10px;
+      font-size: 12px;
+      border-radius: 5px;
+      z-index: 1000;
+    }
   </style>
-
-
-  
 </head>
 <body>
-
   <div class="header">
     <div class="logo">
       <svg xmlns="http://www.w3.org/2000/svg" xml:space="preserve" viewBox="0 0 640 640"> </svg>
     </div>
     <h2>Библиотека Дананга</h2>
   </div>
-
   
   <div id="filters">
     <select id="librarianFilter">
@@ -291,7 +292,6 @@
     
   <h1 id="resultsCount">Не найдено книг</h1>
 
-
   <table id="booksTable">
     <thead>
       <tr>
@@ -306,8 +306,22 @@
     <tbody></tbody>
   </table>
 
+  <!-- New: On-screen debug log container -->
+  <div id="debugLog"></div>
+
   <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
   <script>
+    // New: Helper function to append messages to on-screen debug log
+    function logToScreen(message) {
+      const debugLog = document.getElementById('debugLog');
+      const logEntry = document.createElement('div');
+      logEntry.textContent = `[${new Date().toLocaleTimeString()}] ${message}`;
+      debugLog.appendChild(logEntry);
+      debugLog.scrollTop = debugLog.scrollHeight; // Auto-scroll to latest
+    }
+
+    // New: Log initial Telegram.WebApp status
+    logToScreen(`Telegram.WebApp available: ${!!(window.Telegram?.WebApp)}`);
 
     function getBooksCountText(count) {
       if (count === 0) {
@@ -336,7 +350,6 @@
       return `${verb} — ${count} ${noun}`;
     }
 
-    
     const searchInput = document.getElementById("searchInput");
     const clearBtn = document.getElementById("clear-btn");
     
@@ -350,7 +363,6 @@
       searchInput.value = "";
       clearBtn.style.display = "none";
       searchInput.focus(); // keep keyboard open
-      //filterBooks(); // 🔹 reset results when search cleared — it was like that with no fake delay
       delayedFilter(); // filterBooks with fake delay
     });
     
@@ -363,26 +375,47 @@
       }
     });
     
-    
     const publicSpreadsheetUrl = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSsbONmnLPfGlepVvJkasahs9_BQaYspP4rK15IFRhRqXkcPGTdWsog5XoxL0T0Eid5GL3VU2I3otzD/pub?gid=0&single=true&output=csv";
     let books = [];
 
-    // New function to handle initial borrow/queue click
+    // Updated: Removed e.preventDefault() since it works without it
     function handleBorrowClick(e) {
-      //e.preventDefault();  // Prevent default link navigation (since we're in a Mini App)
       const link = e.target;
-      Telegram.WebApp.openTelegramLink(link.href);  // Open the deep link in Telegram
-      link.textContent = 'Go back to bot';  // Change text as requested
-      link.classList.remove('take-book', 'take-line');  // Remove original classes
-      link.classList.add('go-back');  // Add new class for yellow background and black text
-      link.removeEventListener('click', handleBorrowClick);  // Remove this handler
-      link.addEventListener('click', handleCloseClick);  // Add close handler for next click
+      try {
+        if (window.Telegram?.WebApp) {
+          Telegram.WebApp.openTelegramLink(link.href);  // Try Telegram API
+          logToScreen(`Opened Telegram link via WebApp API: ${link.href}`);
+        } else {
+          logToScreen("Telegram.WebApp not available, using default link navigation");
+          window.location.href = link.href;  // Fallback to default navigation
+        }
+        // Update link appearance and behavior
+        link.textContent = 'Go back to bot';
+        link.classList.remove('take-book', 'take-line');
+        link.classList.add('go-back');
+        link.removeEventListener('click', handleBorrowClick);
+        link.addEventListener('click', handleCloseClick);
+      } catch (error) {
+        logToScreen(`Error opening Telegram link: ${error.message}`);
+        window.location.href = link.href;  // Fallback on error
+      }
     }
 
-    // New function to handle the "Go back" click
+    // Updated: Handle "Go back" click with on-screen logging
     function handleCloseClick(e) {
-      //e.preventDefault();  // Prevent any default behavior
-      Telegram.WebApp.close();  // Close the Mini App window as requested
+      e.preventDefault();  // Prevent default for close action
+      try {
+        if (window.Telegram?.WebApp) {
+          Telegram.WebApp.close();  // Try to close Mini App
+          logToScreen("Closed Mini App via WebApp API");
+        } else {
+          logToScreen("Telegram.WebApp not available, cannot close Mini App");
+          alert("Please return to the Telegram bot manually.");
+        }
+      } catch (error) {
+        logToScreen(`Error closing Mini App: ${error.message}`);
+        alert("Please return to the Telegram bot manually.");
+      }
     }
     
     function renderTable(data) {
@@ -414,18 +447,15 @@
           const link = document.createElement("a");
           link.href = `https://t.me/biblioteka_danang_bot?start=request_borrow_${book["Book ID"]}`;
           link.textContent = "Взять книгу";
-          link.target = "_blank";
-          link.classList.add("take-book");   // 🔹 add class
-          link.addEventListener('click', handleBorrowClick);  // <-- New: Attach handler for dynamic behavior
-          actionCell.classList.add("action-col"); // mark cell as action column
+          link.classList.add("take-book");
+          link.addEventListener('click', handleBorrowClick);
           actionCell.appendChild(link);
         } else if (book["Current Status"] === "Borrowed") {
           const link = document.createElement("a");
           link.href = `https://t.me/biblioteka_danang_bot?start=wlist_${book["Book ID"]}`;
           link.textContent = "Занять очередь";
-          link.target = "_blank";
-          link.classList.add("take-line");   // 🔹 add class
-          link.addEventListener('click', handleBorrowClick);  // <-- New: Attach handler for dynamic behavior
+          link.classList.add("take-line");
+          link.addEventListener('click', handleBorrowClick);
           actionCell.appendChild(link);
         } else {
           actionCell.textContent = "-";
@@ -435,7 +465,7 @@
         // Genre
         const genreCell = document.createElement("td");
         genreCell.textContent = book["Genre"] || "";
-        genreCell.classList.add("genre-col");     // 👈 add class
+        genreCell.classList.add("genre-col");
         row.appendChild(genreCell);
 
         // Librarian
@@ -447,20 +477,14 @@
         // Status
         const statusCell = document.createElement("td");
         statusCell.textContent = book["Current Status"] || "";
-        statusCell.classList.add("status-col");   // 👈 add class
+        statusCell.classList.add("status-col");
         row.appendChild(statusCell);
         
         tbody.appendChild(row);
       });
 
-      // old version with no plural forms
-      // document.getElementById("resultsCount").textContent = `Найдено – ${data.length} книг`;
       document.getElementById("resultsCount").textContent = getBooksCountText(data.length);
-
-
     }
-
-
 
     function filterBooks() {
       const query = document.getElementById("searchInput").value.toLowerCase();
@@ -481,7 +505,6 @@
         return matchSearch && matchGenre && matchAvailable && matchLibrarian;
       });
 
-
       renderTable(filtered);
     }
 
@@ -496,11 +519,8 @@
         books = results.data.filter(row => row.Title); // remove empty rows
         renderTable(books);
         
-    document.getElementById("resultsCount").classList.remove("loading");
-    // old version with no plural forms 
-    // document.getElementById("resultsCount").textContent = `Найдено – ${books.length} книг`;
-    document.getElementById("resultsCount").textContent = getBooksCountText(books.length);
-
+        document.getElementById("resultsCount").classList.remove("loading");
+        document.getElementById("resultsCount").textContent = getBooksCountText(books.length);
 
         // fill dropdown with unique genres
         const genres = [...new Set(books.flatMap(b => b.Genre.split(",").map(g => g.trim())))];
@@ -535,28 +555,17 @@
           opt.textContent = librarianMap[username] || username; // show name instead
           librarianFilter.appendChild(opt);
         });
-
-
-        
       }
     });
 
-    /* Commented not delayed UI controls. Delayed is under here at the bottom of style tag
-    
-    document.getElementById("searchInput").addEventListener("input", filterBooks);
-    document.getElementById("genreFilter").addEventListener("change", filterBooks);
-    document.getElementById("availableOnly").addEventListener("change", filterBooks);
-    document.getElementById("librarianFilter").addEventListener("change", filterBooks);
-    */
-    
     /* FAKE DELAY ON SEARCH AND FILTER */
     let filterTimer = null;
 
     function showLoading() {
       const rc = document.getElementById("resultsCount");
       rc.textContent = "Поиск книг...";
-      rc.classList.add("loading"); // you already use this class on first CSV load
-      document.getElementById("booksTable").classList.add("loading-table"); // dimm the table
+      rc.classList.add("loading");
+      document.getElementById("booksTable").classList.add("loading-table");
     }
     
     function delayedFilter(delayMs = 600) {
@@ -564,8 +573,7 @@
       showLoading();
     
       filterTimer = setTimeout(() => {
-        filterBooks(); // renders table and updates resultsCount text
-        // remove loading class after render, remove loading-table class after after render (remove fake delay)
+        filterBooks();
         document.getElementById("resultsCount").classList.remove("loading");
         document.getElementById("booksTable").classList.remove("loading-table");
       }, delayMs);
@@ -576,9 +584,7 @@
     document.getElementById("genreFilter").addEventListener("change", () => delayedFilter());
     document.getElementById("availableOnly").addEventListener("change", () => delayedFilter());
     document.getElementById("librarianFilter").addEventListener("change", () => delayedFilter());
-
-    
-    
   </script>
 </body>
 </html>
+```
