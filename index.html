@@ -272,6 +272,22 @@
     #debugLog.debug-active {
       display: block;
     }
+
+    /* Debug button style */
+    #viewLogsBtn {
+      display: none; /* Hidden unless debug=true */
+      margin: 10px 0;
+      padding: 8px 16px;
+      background-color: #4A95D6;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 14px;
+    }
+    #viewLogsBtn.debug-active {
+      display: inline-block;
+    }
   </style>
 </head>
 <body>
@@ -294,6 +310,8 @@
       <button id="clear-btn" class="clear-btn">╳</button>
     </div>
     <label><input type="checkbox" id="availableOnly">Только доступные книги без очереди</label>
+    <!-- Debug button, shown only in testing mode -->
+    <button id="viewLogsBtn">View Debug Logs</button>
   </div>
     
   <h1 id="resultsCount">Не найдено книг</h1>
@@ -320,10 +338,12 @@
     // Check if testing mode is enabled (?debug=true in URL)
     const isDebugMode = window.location.search.includes('debug=true');
 
-    // Conditionally show debug log div
+    // Conditionally show debug log div and button
     const debugLogDiv = document.getElementById('debugLog');
+    const viewLogsBtn = document.getElementById('viewLogsBtn');
     if (isDebugMode) {
       debugLogDiv.classList.add('debug-active');
+      viewLogsBtn.classList.add('debug-active');
     }
 
     // Store logs in localStorage and show on-screen if debug mode is on
@@ -350,6 +370,12 @@
         alert('Debug Logs:\n' + (recentLogs || 'No logs available'));
       }
     }
+
+    // Handle debug button click to show all logs
+    viewLogsBtn.addEventListener('click', () => {
+      const logs = JSON.parse(localStorage.getItem('debugLogs') || '[]');
+      alert('All Debug Logs:\n' + (logs.join('\n') || 'No logs available'));
+    });
 
     // Log initial Telegram.WebApp status
     logToStorage(`Telegram.WebApp available: ${!!(window.Telegram?.WebApp)}`);
