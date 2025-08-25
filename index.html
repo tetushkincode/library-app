@@ -412,30 +412,45 @@
     // Track clicks to prevent multiple rapid executions
     let isProcessingClick = false;
 
-    // Handle borrow/queue click
+    // Updated: Change link style immediately, close Mini App after delay
     function handleBorrowClick(e) {
       e.preventDefault(); // Prevent <a> tag's default navigation
       if (isProcessingClick) return; // Prevent multiple clicks
       isProcessingClick = true;
       const link = e.target;
       try {
+        // Navigate to bot
         if (window.Telegram?.WebApp) {
           logToStorage(`Opened Telegram link via WebApp API: ${link.href}`);
-          showDebugAlert(); // Show logs before navigation (debug mode only)
           Telegram.WebApp.openTelegramLink(link.href); // Try Telegram API
         } else {
           logToStorage("Telegram.WebApp not available, using default link navigation");
-          showDebugAlert(); // Show logs before navigation (debug mode only)
           window.location.href = link.href; // Fallback to default navigation
         }
-        // Delay link update to ensure navigation completes
+        // Immediately update link to "Go back to bot"
+        link.textContent = 'Go back to bot';
+        link.classList.remove('take-book', 'take-line');
+        link.classList.add('go-back');
+        link.href = 'https://t.me/biblioteka_danang_bot'; // Set fallback URL
+        link.removeEventListener('click', handleBorrowClick);
+        link.addEventListener('click', handleCloseClick);
+        // Delay Mini App closure to allow navigation to complete
         setTimeout(() => {
-          link.textContent = 'Go back to bot';
-          link.classList.remove('take-book', 'take-line');
-          link.classList.add('go-back');
-          link.href = 'https://t.me/biblioteka_danang_bot'; // Set fallback URL for "Go back"
-          link.removeEventListener('click', handleBorrowClick);
-          link.addEventListener('click', handleCloseClick);
+          try {
+            if (window.Telegram?.WebApp) {
+              logToStorage("Closing Mini App via WebApp API after borrow click");
+              showDebugAlert(); // Show logs before closing (debug mode only)
+              Telegram.WebApp.close(); // Try to close Mini App
+            } else {
+              logToStorage("Telegram.WebApp not available, redirecting to bot");
+              showDebugAlert(); // Show logs before navigation (debug mode only)
+              window.location.href = 'https://t.me/biblioteka_danang_bot'; // Fallback
+            }
+          } catch (error) {
+            logToStorage(`Error closing Mini App: ${error.message}`);
+            showDebugAlert(); // Show logs before navigation (debug mode only)
+            window.location.href = 'https://t.me/biblioteka_danang_bot'; // Fallback
+          }
           isProcessingClick = false; // Reset click guard
         }, 1000); // 1-second delay to allow navigation
       } catch (error) {
