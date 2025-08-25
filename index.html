@@ -251,8 +251,9 @@
 
     .loading-table { opacity: 0.4; pointer-events: none; } /* dimm the table during fake loading delayedFilter() */
 
-    /* On-screen debug log styles */
+    /* On-screen debug log styles, hidden by default */
     #debugLog {
+      display: none; /* Hidden unless debug=true */
       position: fixed;
       bottom: 10px;
       left: 10px;
@@ -265,6 +266,11 @@
       font-size: 12px;
       border-radius: 5px;
       z-index: 1000;
+    }
+
+    /* Show debug log when testing mode is on */
+    #debugLog.debug-active {
+      display: block;
     }
   </style>
 </head>
@@ -306,31 +312,43 @@
     <tbody></tbody>
   </table>
 
-  <!-- On-screen debug log container -->
+  <!-- On-screen debug log container, shown only in testing mode -->
   <div id="debugLog"></div>
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
   <script>
-    // New: Store logs in localStorage and show in alert for debugging
+    // Check if testing mode is enabled (?debug=true in URL)
+    const isDebugMode = window.location.search.includes('debug=true');
+
+    // Conditionally show debug log div
+    const debugLogDiv = document.getElementById('debugLog');
+    if (isDebugMode) {
+      debugLogDiv.classList.add('debug-active');
+    }
+
+    // Store logs in localStorage and show on-screen if debug mode is on
     function logToStorage(message) {
       const logs = JSON.parse(localStorage.getItem('debugLogs') || '[]');
       const timestamp = new Date().toLocaleTimeString();
       logs.push(`[${timestamp}] ${message}`);
       if (logs.length > 50) logs.shift(); // Limit to 50 logs
       localStorage.setItem('debugLogs', JSON.stringify(logs));
-      // Also append to on-screen log
-      const debugLog = document.getElementById('debugLog');
-      const logEntry = document.createElement('div');
-      logEntry.textContent = `[${timestamp}] ${message}`;
-      debugLog.appendChild(logEntry);
-      debugLog.scrollTop = debugLog.scrollHeight; // Auto-scroll to latest
+      // Append to on-screen log only in debug mode
+      if (isDebugMode) {
+        const logEntry = document.createElement('div');
+        logEntry.textContent = `[${timestamp}] ${message}`;
+        debugLogDiv.appendChild(logEntry);
+        debugLogDiv.scrollTop = debugLogDiv.scrollHeight; // Auto-scroll to latest
+      }
     }
 
-    // New: Show recent logs in alert before navigation (for testing)
+    // Show recent logs in alert only in debug mode
     function showDebugAlert() {
-      const logs = JSON.parse(localStorage.getItem('debugLogs') || '[]');
-      const recentLogs = logs.slice(-5).join('\n'); // Show last 5 logs
-      alert('Debug Logs:\n' + (recentLogs || 'No logs available'));
+      if (isDebugMode) {
+        const logs = JSON.parse(localStorage.getItem('debugLogs') || '[]');
+        const recentLogs = logs.slice(-5).join('\n'); // Show last 5 logs
+        alert('Debug Logs:\n' + (recentLogs || 'No logs available'));
+      }
     }
 
     // Log initial Telegram.WebApp status
@@ -391,10 +409,10 @@
     const publicSpreadsheetUrl = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSsbONmnLPfGlepVvJkasahs9_BQaYspP4rK15IFRhRqXkcPGTdWsog5XoxL0T0Eid5GL3VU2I3otzD/pub?gid=0&single=true&output=csv";
     let books = [];
 
-    // New: Track clicks to prevent multiple rapid executions
+    // Track clicks to prevent multiple rapid executions
     let isProcessingClick = false;
 
-    // Updated: Prevent default to avoid double navigation
+    // Handle borrow/queue click
     function handleBorrowClick(e) {
       e.preventDefault(); // Prevent <a> tag's default navigation
       if (isProcessingClick) return; // Prevent multiple clicks
@@ -403,11 +421,11 @@
       try {
         if (window.Telegram?.WebApp) {
           logToStorage(`Opened Telegram link via WebApp API: ${link.href}`);
-          showDebugAlert(); // Show logs before navigation
+          showDebugAlert(); // Show logs before navigation (debug mode only)
           Telegram.WebApp.openTelegramLink(link.href); // Try Telegram API
         } else {
           logToStorage("Telegram.WebApp not available, using default link navigation");
-          showDebugAlert(); // Show logs before navigation
+          showDebugAlert(); // Show logs before navigation (debug mode only)
           window.location.href = link.href; // Fallback to default navigation
         }
         // Delay link update to ensure navigation completes
@@ -422,13 +440,13 @@
         }, 1000); // 1-second delay to allow navigation
       } catch (error) {
         logToStorage(`Error opening Telegram link: ${error.message}`);
-        showDebugAlert(); // Show logs before navigation
+        showDebugAlert(); // Show logs before navigation (debug mode only)
         window.location.href = link.href; // Fallback on error
         isProcessingClick = false; // Reset click guard
       }
     }
 
-    // Updated: Handle "Go back" click with logging
+    // Handle "Go back" click
     function handleCloseClick(e) {
       e.preventDefault(); // Prevent default to avoid unexpected navigation
       if (isProcessingClick) return; // Prevent multiple clicks
@@ -436,16 +454,16 @@
       try {
         if (window.Telegram?.WebApp) {
           logToStorage("Closed Mini App via WebApp API");
-          showDebugAlert(); // Show logs before closing
+          showDebugAlert(); // Show logs before closing (debug mode only)
           Telegram.WebApp.close(); // Try to close Mini App
         } else {
           logToStorage("Telegram.WebApp not available, redirecting to bot");
-          showDebugAlert(); // Show logs before navigation
+          showDebugAlert(); // Show logs before navigation (debug mode only)
           window.location.href = 'https://t.me/biblioteka_danang_bot'; // Fallback to bot URL
         }
       } catch (error) {
         logToStorage(`Error closing Mini App: ${error.message}`);
-        showDebugAlert(); // Show logs before navigation
+        showDebugAlert(); // Show logs before navigation (debug mode only)
         window.location.href = 'https://t.me/biblioteka_danang_bot'; // Fallback on error
       } finally {
         isProcessingClick = false; // Reset click guard
