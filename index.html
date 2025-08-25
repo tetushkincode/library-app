@@ -71,7 +71,7 @@
 
     /* "Go back" button */
     #booksTable td.action-col a.go-back {
-      background-color: yellow;
+      background-color: green;
       color: black;
     }
 
@@ -454,7 +454,7 @@
           window.location.href = link.href; // Fallback to default navigation
         }
         // Immediately update link to "Go back to bot"
-        link.textContent = 'Go back to bot';
+        link.textContent = '✔️ Запрос отправлен';
         link.classList.remove('take-book', 'take-line');
         link.classList.add('go-back');
         link.href = 'https://t.me/biblioteka_danang_bot'; // Set fallback URL
