@@ -1,3 +1,4 @@
+```html
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -442,7 +443,8 @@
       }
     });
     
-    const publicSpreadsheetUrl = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSsbONmnLPfGlepVvJkasahs9_BQaYspP4rK15IFRhRqXkcPGTdWsog5XoxL0T0Eid5GL3VU2I3otzD/pub?gid=0&single=true&output=csv";
+    const publicCsvUrl = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSsbONmnLPfGlepVvJkasahs9_BQaYspP4rK15IFRhRqXkcPGTdWsog5XoxL0T0Eid5GL3VU2I3otzD/pub?gid=0&single=true&output=csv";
+    const publicHtmlUrl = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSsbONmnLPfGlepVvJkasahs9_BQaYspP4rK15IFRhRqXkcPGTdWsog5XoxL0T0Eid5GL3VU2I3otzD/pubhtml";
     let books = [];
 
     // Track clicks to prevent multiple rapid executions
@@ -598,13 +600,13 @@
       
       const filtered = books.filter(b => {
         const matchSearch =
-          b.Title.toLowerCase().includes(query) ||
-          b.Author.toLowerCase().includes(query) ||
-          b.Genre.toLowerCase().includes(query);
+          (b.Title || "").toLowerCase().includes(query) ||
+          (b.Author || "").toLowerCase().includes(query) ||
+          (b.Genre || "").toLowerCase().includes(query);
       
-        const matchGenre = genre ? b.Genre.toLowerCase().includes(genre.toLowerCase()) : true;
-        const matchAvailable = availableOnly ? b["Current Status"].toLowerCase() === "available" : true;
-        const matchLibrarian = librarian ? b["Responsible Librarian Username"] === librarian : true;
+        const matchGenre = genre ? (b.Genre || "").toLowerCase().includes(genre.toLowerCase()) : true;
+        const matchAvailable = availableOnly ? (b["Current Status"] || "").toLowerCase() === "available" : true;
+        const matchLibrarian = librarian ? (b["Responsible Librarian Username"] || "") === librarian : true;
       
         return matchSearch && matchGenre && matchAvailable && matchLibrarian;
       });
@@ -615,77 +617,142 @@
 
     document.getElementById("resultsCount").textContent = "Загрузка книг...";
     document.getElementById("resultsCount").classList.add("loading");  
-    
-    // Load CSV with error handling
-    logToStorage(`Attempting to load CSV from ${publicSpreadsheetUrl}`);
-    Papa.parse(publicSpreadsheetUrl, {
+
+    // Primary: Load CSV
+    logToStorage(`Attempting to load CSV from ${publicCsvUrl}`);
+    Papa.parse(publicCsvUrl, {
       download: true,
       header: true,
       complete: function(results) {
-        logToStorage(`Papa.parse completed, data length: ${results.data.length}`);
+        logToStorage(`CSV Papa.parse completed, data length: ${results.data.length}`);
         if (results.errors.length > 0) {
-          results.errors.forEach(err => logToStorage(`Papa.parse error: ${err.message}`));
-          errorMessageDiv.textContent = "Ошибка загрузки данных. Пожалуйста, попробуйте позже.";
-          errorMessageDiv.style.display = 'block';
-          document.getElementById("resultsCount").classList.remove("loading");
-          return;
+          results.errors.forEach(err => logToStorage(`CSV Papa.parse error: ${err.message}`));
         }
-        books = results.data.filter(row => row.Title); // Remove empty rows
-        logToStorage(`Filtered ${books.length} valid books`);
-        if (books.length === 0) {
-          logToStorage("No valid books found in CSV");
-          errorMessageDiv.textContent = "Нет доступных книг.";
-          errorMessageDiv.style.display = 'block';
+        if (results.data.length > 0) {
+          books = results.data.filter(row => row.Title); // Remove empty rows
+          logToStorage(`CSV filtered ${books.length} valid books`);
+          if (books.length === 0) {
+            logToStorage("No valid books found in CSV, falling back to HTML");
+            loadHtmlFallback();
+            return;
+          }
+          finalizeLoading(books);
+        } else {
+          logToStorage("CSV data empty or failed, falling back to HTML");
+          loadHtmlFallback();
         }
-        renderTable(books);
-        
-        document.getElementById("resultsCount").classList.remove("loading");
-        document.getElementById("resultsCount").textContent = getBooksCountText(books.length);
-
-        // Fill dropdown with unique genres
-        const genres = [...new Set(books.flatMap(b => b.Genre ? b.Genre.split(",").map(g => g.trim()) : []))];
-        logToStorage(`Found ${genres.length} unique genres`);
-        const genreFilter = document.getElementById("genreFilter");
-        genres.sort().forEach(g => {
-          const opt = document.createElement("option");
-          opt.value = g;
-          opt.textContent = g;
-          genreFilter.appendChild(opt);
-        });
-        
-        // Mapping librarian usernames -> names
-        const librarianMap = {
-          "alisss_kaa": "Alisa",
-          "it1st1m3": "Sonya",
-          "nganigga": "Nikita",
-          "illeeeya": "Inna",
-          "tetushkin": "Oleg"
-          // add others...
-        };
-        
-        // Fill librarians dropdown with unique librarians
-        const librarians = [...new Set(books.map(b => b["Responsible Librarian Username"]).filter(Boolean))];
-        logToStorage(`Found ${librarians.length} unique librarians`);
-        const librarianFilter = document.getElementById("librarianFilter");
-        
-        // Reset dropdown
-        librarianFilter.innerHTML = '<option value="">Все библиотекари</option>';
-        
-        librarians.sort().forEach(username => {
-          const opt = document.createElement("option");
-          opt.value = username; // Filter by username internally
-          opt.textContent = librarianMap[username] || username; // Show name instead
-          librarianFilter.appendChild(opt);
-        });
       },
       error: function(error) {
-        logToStorage(`Papa.parse failed: ${error.message}`);
-        errorMessageDiv.textContent = "Ошибка загрузки данных. Пожалуйста, проверьте подключение или настройки таблицы.";
-        errorMessageDiv.style.display = 'block';
-        document.getElementById("resultsCount").classList.remove("loading");
-        document.getElementById("resultsCount").textContent = "Ошибка загрузки";
+        logToStorage(`CSV Papa.parse failed: ${error.message}`);
+        logToStorage("Falling back to HTML");
+        loadHtmlFallback();
       }
     });
+
+    // Fallback: Load HTML if CSV fails
+    function loadHtmlFallback() {
+      logToStorage(`Attempting to load HTML from ${publicHtmlUrl}`);
+      fetch(publicHtmlUrl)
+        .then(response => {
+          if (!response.ok) {
+            throw new Error(`HTTP error! Status: ${response.status}`);
+          }
+          return response.text();
+        })
+        .then(html => {
+          logToStorage("HTML fetched successfully");
+          // Parse HTML to extract table data
+          const parser = new DOMParser();
+          const doc = parser.parseFromString(html, "text/html");
+          const rows = doc.querySelectorAll("table tr");
+          const data = [];
+          let headers = [];
+
+          if (rows.length === 0) {
+            throw new Error("No table rows found in HTML");
+          }
+
+          rows.forEach((row, index) => {
+            const cells = row.querySelectorAll("td, th");
+            if (index === 0) {
+              // Extract headers
+              headers = Array.from(cells).map(cell => cell.textContent.trim());
+              logToStorage(`HTML headers found: ${headers.join(", ")}`);
+            } else {
+              // Extract data rows
+              const rowData = {};
+              cells.forEach((cell, i) => {
+                if (headers[i]) {
+                  rowData[headers[i]] = cell.textContent.trim();
+                }
+              });
+              if (rowData.Title) data.push(rowData);
+            }
+          });
+
+          logToStorage(`HTML parsed ${data.length} valid books`);
+          if (data.length === 0) {
+            logToStorage("No valid books found in HTML");
+            errorMessageDiv.textContent = "Нет доступных книг.";
+            errorMessageDiv.style.display = "block";
+            document.getElementById("resultsCount").classList.remove("loading");
+            document.getElementById("resultsCount").textContent = "Нет книг";
+            return;
+          }
+
+          books = data;
+          finalizeLoading(books);
+        })
+        .catch(error => {
+          logToStorage(`HTML fetch failed: ${error.message}`);
+          errorMessageDiv.textContent = "Ошибка загрузки данных. Пожалуйста, проверьте подключение или настройки таблицы.";
+          errorMessageDiv.style.display = "block";
+          document.getElementById("resultsCount").classList.remove("loading");
+          document.getElementById("resultsCount").textContent = "Ошибка загрузки";
+        });
+    }
+
+    // Finalize loading (shared for CSV and HTML)
+    function finalizeLoading(data) {
+      renderTable(data);
+      
+      document.getElementById("resultsCount").classList.remove("loading");
+      document.getElementById("resultsCount").textContent = getBooksCountText(data.length);
+
+      // Fill dropdown with unique genres
+      const genres = [...new Set(data.flatMap(b => b.Genre ? b.Genre.split(",").map(g => g.trim()) : []))];
+      logToStorage(`Found ${genres.length} unique genres`);
+      const genreFilter = document.getElementById("genreFilter");
+      genres.sort().forEach(g => {
+        const opt = document.createElement("option");
+        opt.value = g;
+        opt.textContent = g;
+        genreFilter.appendChild(opt);
+      });
+      
+      // Mapping librarian usernames -> names
+      const librarianMap = {
+        "alisss_kaa": "Alisa",
+        "it1st1m3": "Sonya",
+        "nganigga": "Nikita",
+        "illeeeya": "Inna",
+        "tetushkin": "Oleg"
+      };
+      
+      // Fill librarians dropdown with unique librarians
+      const librarians = [...new Set(data.map(b => b["Responsible Librarian Username"]).filter(Boolean))];
+      logToStorage(`Found ${librarians.length} unique librarians`);
+      const librarianFilter = document.getElementById("librarianFilter");
+      
+      librarianFilter.innerHTML = '<option value="">Все библиотекари</option>';
+      
+      librarians.sort().forEach(username => {
+        const opt = document.createElement("option");
+        opt.value = username;
+        opt.textContent = librarianMap[username] || username;
+        librarianFilter.appendChild(opt);
+      });
+    }
 
     /* FAKE DELAY ON SEARCH AND FILTER */
     let filterTimer = null;
@@ -716,3 +783,4 @@
   </script>
 </body>
 </html>
+```
