@@ -640,7 +640,7 @@
       },
       error: function(error) {
         logToStorage(`CSV Papa.parse failed: ${error.message}`);
-        errorMessageDiv.textContent = "Ошибка загрузки данных. Пожалуйста, проверьте подключение или настройки таблицы.";
+        errorMessageDiv.textContent = "Ошибка загрузки данных. Сообщите об ошибкe <a href="t.me/tetushkin">Олегу в телеграме</a>, пожалуйста, он будет чинить";
         errorMessageDiv.style.display = "block";
         document.getElementById("resultsCount").classList.remove("loading");
         document.getElementById("resultsCount").textContent = "Ошибка загрузки";
