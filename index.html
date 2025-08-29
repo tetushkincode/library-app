@@ -4,19 +4,18 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Библиотека Дананга</title>
-  <script src="https://telegram.org/js/telegram-web-app.js"></script>
   <style>
     body { font-family: Arial, sans-serif; margin: 95px 20px 20px 20px; background-color: #ffffff;}
     table { border-collapse: collapse; width: 100%; margin-top: 10px; max-width: 650px; }
 
     th, td { 
-      border: none;          /* remove borders */
+      border: none;
       padding: 8px; 
       text-align: left; 
     }
 
     #booksTable tbody tr:nth-child(odd) {
-      background-color: #f2f2f2;  /* light grey */
+      background-color: #f2f2f2;
     }
 
     #booksTable thead {
@@ -30,16 +29,14 @@
     
     input, select { margin-right: 10px; margin-bottom:15px; padding: 5px; }
     #booksTable td.action-col {
-      white-space: nowrap;   /* prevents wrapping */
-      width: 1%;             /* lets it shrink to fit */
+      white-space: nowrap;
+      width: 1%;
     }
     
     #booksTable th.librarian-col,
     #booksTable td.librarian-col,
-    
     #booksTable th.genre-col,
     #booksTable td.genre-col,
-    
     #booksTable th.status-col,
     #booksTable td.status-col {
       display: none;
@@ -48,7 +45,6 @@
       font-size: 10px;
     }
 
-    /* Base button style */
     #booksTable td.action-col a {
       display: inline-block;
       padding: 6px 14px;
@@ -59,23 +55,20 @@
       font-weight: normal;
     }
     
-    /* "Take book" button */
     #booksTable td.action-col a.take-book {
       background-color: #4A95D6;
     }
     
-    /* "Take line" button */
     #booksTable td.action-col a.take-line {
       background-color: #707579;
     }
 
-    /* "Go back" button */
     #booksTable td.action-col a.go-back {
       background-color: #c3ffaf;
       color: black;
     }
 
-   .loading {
+    .loading {
       animation: blink 2s infinite;
       color: grey;
       font-weight: bold;
@@ -88,14 +81,13 @@
 
     #filters {
       display: flex;
-      flex-direction: column;   /* stack vertically */
-      gap: 10px;                /* spacing between rows */
-      max-width: 400px;         /* keeps it tidy on wide screens */
+      flex-direction: column;
+      gap: 10px;
+      max-width: 400px;
       margin-top: 35px;
       margin-bottom: 35px;
     }
     
-    /* keep text and selects full width */
     #filters input[type="text"],
     #filters select {
       width: 100%;
@@ -103,25 +95,24 @@
       border-radius: 8px;
       border: 1px solid #ccc;
       padding: 10px;
-      font-size: 16px;   /* better for tapping */
+      font-size: 16px;
       margin-bottom: 4px;
       height: 41px;
       color: black;
     }
     
-    /* fix checkbox + label inline */
     #filters label {
       display: flex;
-      align-items: center;  /* keeps checkbox + text aligned */
-      gap: 10px;             /* spacing between box and text */
+      align-items: center;
+      gap: 10px;
       font-size: 16px;
-      width: auto;          /* don’t stretch full width */
+      width: auto;
       margin-left: 4px;
       margin-top: 4px;
     }
     
     #filters input[type="checkbox"] {
-      margin: 0;            /* reset margins */
+      margin: 0;
       width: 20px;
       height: 20px;
       border: 1px;
@@ -130,11 +121,11 @@
     .header {
       display: flex;
       align-items: center;
-      gap: 12px;       /* space between logo and text */
+      gap: 12px;
     }
     
     .logo {
-      width: 60px;     /* adjust size */
+      width: 60px;
       height: 60px;
       border-radius: 50%;
       overflow: hidden;
@@ -149,13 +140,10 @@
     }
     
     @media (max-width: 600px) {
-      
-      /* Hide the table head completely */
       #booksTable thead {
         display: none !important;
       }
       
-      /* Turn rows into cards */
       #booksTable,
       #booksTable tbody,
       #booksTable tr {
@@ -169,41 +157,36 @@
         border-radius: 8px;
         padding: 10px;
         background: #fafafa !important;
-    
-        /* prevent overflow */
         box-sizing: border-box;
         overflow-wrap: break-word;
         word-break: break-word;
       }
     
-      /* Each cell is a block, left-aligned */
       #booksTable td {
         display: block;
         text-align: left;
         padding: 6px 0;
       }
     
-      /* Optional: remove label before text if you don’t want "Title:" showing */
       #booksTable td::before {
         display: none;
       }
     
-      /* Buttons stay inline but won’t break layout */
       #booksTable td.action-col a {
-        display: inline-block;     /* stay like buttons */
+        display: inline-block;
         margin-top: 6px;
         padding: 8px 14px;
         border-radius: 24px;
         text-decoration: none;
         color: #fff;
-        white-space: nowrap;       /* keep text in one line */
-        word-break: normal;        /* don’t break characters */
+        white-space: nowrap;
+        word-break: normal;
       }
-      /* ensure action cell doesn't force overflow */
+      
       #booksTable td.action-col {
         text-align: left;
       }
-      /* make sure table itself doesn’t push wider than screen */
+      
       #booksTable {
         width: 100%;
         overflow-x: hidden;
@@ -217,7 +200,7 @@
     
     .search-input {
       width: 100%;
-      padding: 8px 32px 8px 10px; /* padding-right for the button */
+      padding: 8px 32px 8px 10px;
       font-size: 16px;
       border: 1px solid #ccc;
       border-radius: 8px;
@@ -239,7 +222,7 @@
       height: 20px;
       border-radius: 50%;
       cursor: pointer;
-      display: none; /* hidden until text is typed */
+      display: none;
       align-items: center;
       justify-content: center;
       padding: 15px;
@@ -249,59 +232,13 @@
       background: transparent;
     }
 
-    .loading-table { opacity: 0.4; pointer-events: none; } /* dimm the table during fake loading delayedFilter() */
-
-    /* On-screen debug log styles, hidden by default */
-    #debugLog {
-      display: none; /* Hidden unless debug=true */
-      position: fixed;
-      bottom: 10px;
-      left: 10px;
-      right: 10px;
-      max-height: 100px;
-      overflow-y: auto;
-      background: rgba(0, 0, 0, 0.8);
-      color: white;
-      padding: 10px;
-      font-size: 12px;
-      border-radius: 5px;
-      z-index: 1000;
-    }
-
-    /* Show debug log when testing mode is on */
-    #debugLog.debug-active {
-      display: block;
-    }
-
-    /* Debug button style */
-    #viewLogsBtn {
-      display: none; /* Hidden unless debug=true */
-      margin: 10px 0;
-      padding: 8px 16px;
-      background-color: #4A95D6;
-      color: white;
-      border: none;
-      border-radius: 8px;
-      cursor: pointer;
-      font-size: 14px;
-    }
-    #viewLogsBtn.debug-active {
-      display: inline-block;
-    }
-
-    /* Error message style */
-    #errorMessage {
-      color: red;
-      font-size: 16px;
-      margin-top: 10px;
-      display: none;
-    }
+    .loading-table { opacity: 0.4; pointer-events: none; }
   </style>
 </head>
 <body>
   <div class="header">
     <div class="logo">
-     
+      <svg xmlns="http://www.w3.org/2000/svg" xml:space="preserve" viewBox="0 0 640 640"></svg>
     </div>
     <h2>Библиотека Дананга</h2>
   </div>
@@ -318,13 +255,9 @@
       <button id="clear-btn" class="clear-btn">╳</button>
     </div>
     <label><input type="checkbox" id="availableOnly">Только доступные книги без очереди</label>
-    <!-- Debug button, shown only in testing mode -->
-    <button id="viewLogsBtn">View Debug Logs</button>
   </div>
     
   <h1 id="resultsCount">Не найдено книг</h1>
-  <div id="errorMessage"></div>
-
   <table id="booksTable">
     <thead>
       <tr>
@@ -338,375 +271,265 @@
     </thead>
     <tbody></tbody>
   </table>
-
-  <!-- On-screen debug log container, shown only in testing mode -->
-  <div id="debugLog"></div>
-
   <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
   <script>
-    // Check if testing mode is enabled (?debug=true in URL)
-    const isDebugMode = window.location.search.includes('debug=true');
-
-    // Conditionally show debug log div and button
-    const debugLogDiv = document.getElementById('debugLog');
-    const viewLogsBtn = document.getElementById('viewLogsBtn');
-    const errorMessageDiv = document.getElementById('errorMessage');
-    if (isDebugMode) {
-      debugLogDiv.classList.add('debug-active');
-      viewLogsBtn.classList.add('debug-active');
-    }
-
-    // Store logs in localStorage and show on-screen if debug mode is on
+    // NEW: Debug logging function
     function logToStorage(message) {
       const logs = JSON.parse(localStorage.getItem('debugLogs') || '[]');
       const timestamp = new Date().toLocaleTimeString();
       logs.push(`[${timestamp}] ${message}`);
-      if (logs.length > 50) logs.shift(); // Limit to 50 logs
+      if (logs.length > 50) logs.shift();
       localStorage.setItem('debugLogs', JSON.stringify(logs));
-      // Append to on-screen log only in debug mode
-      if (isDebugMode) {
-        const logEntry = document.createElement('div');
-        logEntry.textContent = `[${timestamp}] ${message}`;
-        debugLogDiv.appendChild(logEntry);
-        debugLogDiv.scrollTop = debugLogDiv.scrollHeight; // Auto-scroll to latest
-      }
     }
 
-    // Show recent logs in alert only in debug mode
-    function showDebugAlert() {
-      if (isDebugMode) {
-        const logs = JSON.parse(localStorage.getItem('debugLogs') || '[]');
-        const recentLogs = logs.slice(-5).join('\n'); // Show last 5 logs
-        alert('Debug Logs:\n' + (recentLogs || 'No logs available'));
-      }
-    }
-
-    // Handle debug button click to show all logs
-    viewLogsBtn.addEventListener('click', () => {
-      const logs = JSON.parse(localStorage.getItem('debugLogs') || '[]');
-      alert('All Debug Logs:\n' + (logs.join('\n') || 'No logs available'));
-    });
-
-    // Log initial Telegram.WebApp status
-    logToStorage(`Telegram.WebApp available: ${!!(window.Telegram?.WebApp)}`);
-
+    // Format book count with Russian plural rules
     function getBooksCountText(count) {
       if (count === 0) {
         return "Не найдено книг";
       }
-    
       const lastDigit = count % 10;
       const lastTwoDigits = count % 100;
-    
       let verb, noun;
-    
       if (lastDigit === 1 && lastTwoDigits !== 11) {
         verb = "Найдена";
         noun = "книга";
-      } else if (
-        [2, 3, 4].includes(lastDigit) &&
-        ![12, 13, 14].includes(lastTwoDigits)
-      ) {
+      } else if ([2, 3, 4].includes(lastDigit) && ![12, 13, 14].includes(lastTwoDigits)) {
         verb = "Найдены";
         noun = "книги";
       } else {
         verb = "Найдено";
         noun = "книг";
       }
-    
       return `${verb} — ${count} ${noun}`;
     }
 
+    // Search input and clear button handling
     const searchInput = document.getElementById("searchInput");
     const clearBtn = document.getElementById("clear-btn");
-    
-    // Show/hide clear button depending on text
     searchInput.addEventListener("input", () => {
       clearBtn.style.display = searchInput.value ? "flex" : "none";
     });
-    
-    // Clear field on button click
     clearBtn.addEventListener("click", () => {
       searchInput.value = "";
       clearBtn.style.display = "none";
-      searchInput.focus(); // keep keyboard open
-      delayedFilter(); // filterBooks with fake delay
+      searchInput.focus();
+      delayedFilter();
     });
-    
-    // Close keyboard on Enter
     searchInput.addEventListener("keydown", (event) => {
       if (event.key === "Enter") {
         event.preventDefault();
-        searchInput.blur(); // close keyboard
+        searchInput.blur();
         delayedFilter();
       }
     });
-    
+
     const publicSpreadsheetUrl = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSsbONmnLPfGlepVvJkasahs9_BQaYspP4rK15IFRhRqXkcPGTdWsog5XoxL0T0Eid5GL3VU2I3otzD/pub?gid=0&single=true&output=csv";
     let books = [];
 
-    // Track clicks to prevent multiple rapid executions
-    let isProcessingClick = false;
-
-    // Updated: Change link style immediately, close Mini App after delay
-    function handleBorrowClick(e) {
-      e.preventDefault(); // Prevent <a> tag's default navigation
-      if (isProcessingClick) return; // Prevent multiple clicks
-      isProcessingClick = true;
-      const link = e.target;
-      try {
-        // Navigate to bot
-        if (window.Telegram?.WebApp) {
-          logToStorage(`Opened Telegram link via WebApp API: ${link.href}`);
-          Telegram.WebApp.openTelegramLink(link.href); // Try Telegram API
-        } else {
-          logToStorage("Telegram.WebApp not available, using default link navigation");
-          window.location.href = link.href; // Fallback to default navigation
-        }
-        // Immediately update link to "Go back to bot"
-        link.textContent = '✔️ Запрос отправлен';
-        link.classList.remove('take-book', 'take-line');
-        link.classList.add('go-back');
-        link.href = 'https://t.me/biblioteka_danang_bot'; // Set fallback URL
-        link.removeEventListener('click', handleBorrowClick);
-        link.addEventListener('click', handleCloseClick);
-        // Delay Mini App closure to allow navigation to complete
-        setTimeout(() => {
-          try {
-            if (window.Telegram?.WebApp) {
-              logToStorage("Closing Mini App via WebApp API after borrow click");
-              showDebugAlert(); // Show logs before closing (debug mode only)
-              Telegram.WebApp.close(); // Try to close Mini App
-            } else {
-              logToStorage("Telegram.WebApp not available, redirecting to bot");
-              showDebugAlert(); // Show logs before navigation (debug mode only)
-              window.location.href = 'https://t.me/biblioteka_danang_bot'; // Fallback
-            }
-          } catch (error) {
-            logToStorage(`Error closing Mini App: ${error.message}`);
-            showDebugAlert(); // Show logs before navigation (debug mode only)
-            window.location.href = 'https://t.me/biblioteka_danang_bot'; // Fallback
-          }
-          isProcessingClick = false; // Reset click guard
-        }, 1000); // 1-second delay to allow navigation
-      } catch (error) {
-        logToStorage(`Error opening Telegram link: ${error.message}`);
-        showDebugAlert(); // Show logs before navigation (debug mode only)
-        window.location.href = link.href; // Fallback on error
-        isProcessingClick = false; // Reset click guard
-      }
-    }
-
-    // Handle "Go back" click
-    function handleCloseClick(e) {
-      e.preventDefault(); // Prevent default to avoid unexpected navigation
-      if (isProcessingClick) return; // Prevent multiple clicks
-      isProcessingClick = true;
-      try {
-        if (window.Telegram?.WebApp) {
-          logToStorage("Closed Mini App via WebApp API");
-          showDebugAlert(); // Show logs before closing (debug mode only)
-          Telegram.WebApp.close(); // Try to close Mini App
-        } else {
-          logToStorage("Telegram.WebApp not available, redirecting to bot");
-          showDebugAlert(); // Show logs before navigation (debug mode only)
-          window.location.href = 'https://t.me/biblioteka_danang_bot'; // Fallback to bot URL
-        }
-      } catch (error) {
-        logToStorage(`Error closing Mini App: ${error.message}`);
-        showDebugAlert(); // Show logs before navigation (debug mode only)
-        window.location.href = 'https://t.me/biblioteka_danang_bot'; // Fallback on error
-      } finally {
-        isProcessingClick = false; // Reset click guard
-      }
-    }
-    
+    // Render table with book data
     function renderTable(data) {
       logToStorage(`Rendering table with ${data.length} books`);
       const tbody = document.querySelector("#booksTable tbody");
       tbody.innerHTML = "";
-    
       data.forEach(book => {
         const row = document.createElement("tr");
-    
-        // Title
         const titleCell = document.createElement("td");
         titleCell.textContent = '«' + (book["Title"] || "") + '»';
         titleCell.classList.add("title-col");
         titleCell.setAttribute("data-label", "Title");
         row.appendChild(titleCell);
-    
-        // Author
         const authorCell = document.createElement("td");
         authorCell.textContent = book["Author"] || "";
         authorCell.classList.add("author-col");
         authorCell.setAttribute("data-label", "Author");
         row.appendChild(authorCell);
-      
-        // Action link logic
         const actionCell = document.createElement("td");
-        actionCell.classList.add("action-col"); 
+        actionCell.classList.add("action-col");
         actionCell.setAttribute("data-label", "Action");
         if (book["Current Status"] === "Available") {
           const link = document.createElement("a");
           link.href = `https://t.me/biblioteka_danang_bot?start=request_borrow_${book["Book ID"]}`;
           link.textContent = "Взять книгу";
+          link.target = "_blank";
           link.classList.add("take-book");
-          link.addEventListener('click', handleBorrowClick);
           actionCell.appendChild(link);
         } else if (book["Current Status"] === "Borrowed") {
           const link = document.createElement("a");
           link.href = `https://t.me/biblioteka_danang_bot?start=wlist_${book["Book ID"]}`;
           link.textContent = "Занять очередь";
+          link.target = "_blank";
           link.classList.add("take-line");
-          link.addEventListener('click', handleBorrowClick);
           actionCell.appendChild(link);
         } else {
           actionCell.textContent = "-";
         }
         row.appendChild(actionCell);
-        
-        // Genre
         const genreCell = document.createElement("td");
         genreCell.textContent = book["Genre"] || "";
         genreCell.classList.add("genre-col");
         row.appendChild(genreCell);
-
-        // Librarian
         const librarianCell = document.createElement("td");
         librarianCell.textContent = book["Responsible Librarian Username"] || "";
         librarianCell.classList.add("librarian-col");
         row.appendChild(librarianCell);
-
-        // Status
         const statusCell = document.createElement("td");
         statusCell.textContent = book["Current Status"] || "";
         statusCell.classList.add("status-col");
         row.appendChild(statusCell);
-        
         tbody.appendChild(row);
       });
-
       document.getElementById("resultsCount").textContent = getBooksCountText(data.length);
     }
 
+    // NEW: Filter books with improved genre handling
     function filterBooks() {
       const query = document.getElementById("searchInput").value.toLowerCase();
       const genre = document.getElementById("genreFilter").value;
       const availableOnly = document.getElementById("availableOnly").checked;
       const librarian = document.getElementById("librarianFilter").value;
-      
       const filtered = books.filter(b => {
         const matchSearch =
           (b.Title || "").toLowerCase().includes(query) ||
           (b.Author || "").toLowerCase().includes(query) ||
           (b.Genre || "").toLowerCase().includes(query);
-      
-        const matchGenre = genre ? (b.Genre || "").toLowerCase().includes(genre.toLowerCase()) : true;
+        // MODIFIED: Handle comma-separated genres
+        const matchGenre = genre ? b.Genre.split(",").map(g => g.trim().toLowerCase()).includes(genre.toLowerCase()) : true;
         const matchAvailable = availableOnly ? (b["Current Status"] || "").toLowerCase() === "available" : true;
         const matchLibrarian = librarian ? (b["Responsible Librarian Username"] || "") === librarian : true;
-      
         return matchSearch && matchGenre && matchAvailable && matchLibrarian;
       });
-
-      logToStorage(`Filtered ${filtered.length} books`);
+      logToStorage(`Filtered ${filtered.length} books with query: ${query}, genre: ${genre}, librarian: ${librarian}, availableOnly: ${availableOnly}`);
       renderTable(filtered);
     }
 
+    // Show loading state
+    function showLoading() {
+      const rc = document.getElementById("resultsCount");
+      rc.textContent = "Поиск книг...";
+      rc.classList.add("loading");
+      document.getElementById("booksTable").classList.add("loading-table");
+    }
+
+    // Delayed filter for UX
+    let filterTimer = null;
+    function delayedFilter(delayMs = 600) {
+      clearTimeout(filterTimer);
+      showLoading();
+      filterTimer = setTimeout(() => {
+        filterBooks();
+        document.getElementById("resultsCount").classList.remove("loading");
+        document.getElementById("booksTable").classList.remove("loading-table");
+      }, delayMs);
+    }
+
+    // Load CSV
+    logToStorage(`Attempting to load CSV from ${publicSpreadsheetUrl}`);
     document.getElementById("resultsCount").textContent = "Загрузка книг...";
-    document.getElementById("resultsCount").classList.add("loading");  
-    
-    // Load CSV with error handling
+    document.getElementById("resultsCount").classList.add("loading");
     Papa.parse(publicSpreadsheetUrl, {
       download: true,
       header: true,
       complete: function(results) {
-        books = results.data.filter(row => row.Title); // remove empty rows
-        renderTable(books);
-        
-    document.getElementById("resultsCount").classList.remove("loading");
-    // old version with no plural forms 
-    // document.getElementById("resultsCount").textContent = `Найдено – ${books.length} книг`;
-    document.getElementById("resultsCount").textContent = getBooksCountText(books.length);
+        books = results.data.filter(row => row.Title);
+        logToStorage(`CSV loaded with ${books.length} valid books`);
 
-
-        // fill dropdown with unique genres
-        const genres = [...new Set(books.flatMap(b => b.Genre.split(",").map(g => g.trim())))];
-        const genreFilter = document.getElementById("genreFilter");
-        genres.sort().forEach(g => {
-          const opt = document.createElement("option");
-          opt.value = g;
-          opt.textContent = g;
-          genreFilter.appendChild(opt);
+        // NEW: Pre-compute genres per librarian and librarians per genre
+        const genresByLibrarian = {};
+        const librariansByGenre = {};
+        books.forEach(book => {
+          const librarian = book["Responsible Librarian Username"] || "";
+          const genres = book.Genre ? book.Genre.split(",").map(g => g.trim()) : [];
+          if (!genresByLibrarian[librarian]) genresByLibrarian[librarian] = new Set();
+          genres.forEach(g => genresByLibrarian[librarian].add(g));
+          genres.forEach(g => {
+            if (!librariansByGenre[g]) librariansByGenre[g] = new Set();
+            librariansByGenre[g].add(librarian);
+          });
         });
-        
-        // mapping librarian usernames -> names
+        logToStorage(`Pre-computed genres by librarian: ${JSON.stringify(Object.fromEntries(genresByLibrarian))}`);
+        logToStorage(`Pre-computed librarians by genre: ${JSON.stringify(Object.fromEntries(librariansByGenre))}`);
+
+        // Get unique genres and librarians
+        const genres = [...new Set(books.flatMap(b => b.Genre ? b.Genre.split(",").map(g => g.trim()) : []))];
+        logToStorage(`Found ${genres.length} unique genres`);
+        const librarians = [...new Set(books.map(b => b["Responsible Librarian Username"]).filter(Boolean))];
+        logToStorage(`Found ${librarians.length} unique librarians`);
+
+        // NEW: Update genre dropdown based on selected librarian
+        function updateGenreFilter(selectedLibrarian) {
+          const genreFilter = document.getElementById("genreFilter");
+          const currentGenre = genreFilter.value; // Preserve current selection
+          genreFilter.innerHTML = '<option value="">Все жанры</option>';
+          const availableGenres = selectedLibrarian ? [...genresByLibrarian[selectedLibrarian] || []] : genres;
+          availableGenres.sort().forEach(g => {
+            const opt = document.createElement("option");
+            opt.value = g;
+            opt.textContent = g;
+            genreFilter.appendChild(opt);
+          });
+          // Restore selection if still valid
+          if (availableGenres.includes(currentGenre)) {
+            genreFilter.value = currentGenre;
+          }
+          logToStorage(`Updated genre filter with ${availableGenres.length} genres for librarian: ${selectedLibrarian || 'All'}; preserved genre: ${currentGenre}`);
+        }
+
+        // NEW: Update librarian dropdown based on selected genre
+        function updateLibrarianFilter(selectedGenre) {
+          const librarianFilter = document.getElementById("librarianFilter");
+          const currentLibrarian = librarianFilter.value; // Preserve current selection
+          librarianFilter.innerHTML = '<option value="">Все библиотекари</option>';
+          const availableLibrarians = selectedGenre ? [...librariansByGenre[selectedGenre] || []] : librarians;
+          availableLibrarians.sort().forEach(username => {
+            const opt = document.createElement("option");
+            opt.value = username;
+            opt.textContent = librarianMap[username] || username;
+            librarianFilter.appendChild(opt);
+          });
+          // Restore selection if still valid
+          if (availableLibrarians.includes(currentLibrarian)) {
+            librarianFilter.value = currentLibrarian;
+          }
+          logToStorage(`Updated librarian filter with ${availableLibrarians.length} librarians for genre: ${selectedGenre || 'All'}; preserved librarian: ${currentLibrarian}`);
+        }
+
+        // Librarian username to name mapping
         const librarianMap = {
           "alisss_kaa": "Alisa",
           "it1st1m3": "Sonya",
           "nganigga": "Nikita",
           "illeeeya": "Inna",
           "tetushkin": "Oleg"
-          // add others...
         };
-        
-        // fill librarians dropdown with unique librarians
-        const librarians = [...new Set(books.map(b => b["Responsible Librarian Username"]).filter(Boolean))];
-        const librarianFilter = document.getElementById("librarianFilter");
-        
-        // reset dropdown
-        librarianFilter.innerHTML = '<option value="">Все библиотекари</option>';
-        
-        librarians.sort().forEach(username => {
-          const opt = document.createElement("option");
-          opt.value = username; // still filter by username internally
-          opt.textContent = librarianMap[username] || username; // show name instead
-          librarianFilter.appendChild(opt);
+
+        // NEW: Initialize dropdowns
+        updateGenreFilter("");
+        updateLibrarianFilter("");
+
+        // Render initial table
+        renderTable(books);
+        document.getElementById("resultsCount").classList.remove("loading");
+
+        // MODIFIED: Add change listeners for dependent dropdowns
+        document.getElementById("librarianFilter").addEventListener("change", () => {
+          const selectedLibrarian = document.getElementById("librarianFilter").value;
+          updateGenreFilter(selectedLibrarian);
+          delayedFilter();
         });
-
-
-        
+        document.getElementById("genreFilter").addEventListener("change", () => {
+          const selectedGenre = document.getElementById("genreFilter").value;
+          updateLibrarianFilter(selectedGenre);
+          delayedFilter();
+        });
+        document.getElementById("searchInput").addEventListener("input", () => delayedFilter());
+        document.getElementById("availableOnly").addEventListener("change", () => delayedFilter());
+      },
+      error: function(error) {
+        logToStorage(`CSV load error: ${error.message}`);
+        document.getElementById("resultsCount").textContent = "Ошибка загрузки";
+        document.getElementById("resultsCount").classList.remove("loading");
       }
     });
-
-    /* Commented not delayed UI controls. Delayed is under here at the bottom of style tag
-    
-    document.getElementById("searchInput").addEventListener("input", filterBooks);
-    document.getElementById("genreFilter").addEventListener("change", filterBooks);
-    document.getElementById("availableOnly").addEventListener("change", filterBooks);
-    document.getElementById("librarianFilter").addEventListener("change", filterBooks);
-    */
-    
-    /* FAKE DELAY ON SEARCH AND FILTER */
-    let filterTimer = null;
-
-    function showLoading() {
-      const rc = document.getElementById("resultsCount");
-      rc.textContent = "Поиск книг...";
-      rc.classList.add("loading"); // you already use this class on first CSV load
-      document.getElementById("booksTable").classList.add("loading-table"); // dimm the table
-    }
-    
-    function delayedFilter(delayMs = 600) {
-      clearTimeout(filterTimer);
-      showLoading();
-    
-      filterTimer = setTimeout(() => {
-        filterBooks(); // renders table and updates resultsCount text
-        // remove loading class after render, remove loading-table class after after render (remove fake delay)
-        document.getElementById("resultsCount").classList.remove("loading");
-        document.getElementById("booksTable").classList.remove("loading-table");
-      }, delayMs);
-    }
-    
-    // Use delayed filtering on all UI controls
-    document.getElementById("searchInput").addEventListener("input", () => delayedFilter());
-    document.getElementById("genreFilter").addEventListener("change", () => delayedFilter());
-    document.getElementById("availableOnly").addEventListener("change", () => delayedFilter());
-    document.getElementById("librarianFilter").addEventListener("change", () => delayedFilter());
-
-    
-    
   </script>
 </body>
 </html>
