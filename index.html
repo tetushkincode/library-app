@@ -6,7 +6,7 @@
   <title>Библиотека Дананга</title>
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
   <style>
-    body { font-family: Arial, sans-serif; margin: 95px 20px 20px 20px; background-color: #ffffff;}
+    body { font-family: Arial, sans-serif; margin: 20px 20px 20px 20px; background-color: #ffffff;}
     table { border-collapse: collapse; width: 100%; margin-top: 10px; max-width: 650px; }
 
     th, td { 
@@ -625,7 +625,7 @@
         logToStorage(`Papa.parse completed, data length: ${results.data.length}`);
         if (results.errors.length > 0) {
           results.errors.forEach(err => logToStorage(`Papa.parse error: ${err.message}`));
-          errorMessageDiv.textContent = "Ошибка загрузки данных. Пожалуйста, попробуйте позже.";
+          errorMessageDiv.textContent = "Ошибка загрузки данных. Сообщите Олегу пожалуйста tetushkin в телеграме";
           errorMessageDiv.style.display = 'block';
           document.getElementById("resultsCount").classList.remove("loading");
           return;
